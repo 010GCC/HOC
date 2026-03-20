@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>HORIZONTAL OFFICE CHAIR</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
   :root { --accent: #ff2d78; --ar: 255; --ag: 45; --ab: 120; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -337,8 +339,17 @@
 
 <script>
 // ==================== CONFIG ====================
-const JSONBIN_API_KEY = "$2a$10$YOUR_KEY_HERE";
-const JSONBIN_BIN_ID  = "YOUR_BIN_ID_HERE";
+// ==================== FIREBASE ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyDjTyUl8FQvMmTEzxxonR0wNYwom1fjljk",
+  authDomain: "moto-rush-f47f2.firebaseapp.com",
+  projectId: "moto-rush-f47f2",
+  storageBucket: "moto-rush-f47f2.firebasestorage.app",
+  messagingSenderId: "237153406450",
+  appId: "1:237153406450:web:a1ba6b3730f4d330f4ef6b"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // ==================== ACCENT COLOR SYSTEM ====================
 let ACCENT = '#ff2d78';
@@ -1437,24 +1448,30 @@ function startGame() {
 async function fetchLeaderboard() {
   const statusEl=document.getElementById('lbStatus'); statusEl.textContent='LOADING...';
   try {
-    const resp=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`,{headers:{'X-Master-Key':JSONBIN_API_KEY}});
-    if (!resp.ok) throw new Error();
-    const data=await resp.json(); leaderboardData=data.record.entries||[];
-    statusEl.textContent=`${leaderboardData.length} ENTRIES`; renderLeaderboard();
+    const snap = await db.collection('hoc_scores').orderBy('score','desc').limit(100).get();
+    leaderboardData = snap.docs.map(d => d.data());
+    localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData));
+    statusEl.textContent = `${leaderboardData.length} ENTRIES`;
+    renderLeaderboard();
   } catch(e) {
-    statusEl.textContent='OFFLINE MODE'; leaderboardData=JSON.parse(localStorage.getItem('hoc_lb_cache')||'[]'); renderLeaderboard();
+    statusEl.textContent = 'OFFLINE MODE';
+    leaderboardData = JSON.parse(localStorage.getItem('hoc_lb_cache') || '[]');
+    renderLeaderboard();
   }
 }
 async function submitScore(name, scoreVal) {
-  const entry={name:name.toUpperCase().slice(0,12), score:Math.floor(scoreVal), date:new Date().toISOString().slice(0,10)};
-  let entries=[];
-  try { const r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`,{headers:{'X-Master-Key':JSONBIN_API_KEY}}); if(r.ok){const d=await r.json();entries=d.record.entries||[];} } catch(e){}
-  entries.push(entry); entries.sort((a,b)=>b.score-a.score); if(entries.length>200)entries=entries.slice(0,200);
+  const entry = { name: name.toUpperCase().slice(0,12), score: Math.floor(scoreVal), date: new Date().toISOString().slice(0,10) };
   try {
-    await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},body:JSON.stringify({entries})});
-    leaderboardData=entries; localStorage.setItem('hoc_lb_cache',JSON.stringify(entries)); return true;
+    await db.collection('hoc_scores').add(entry);
+    leaderboardData.push(entry);
+    leaderboardData.sort((a,b) => b.score - a.score);
+    localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData.slice(0,100)));
+    return true;
   } catch(e) {
-    const local=JSON.parse(localStorage.getItem('hoc_lb_cache')||'[]'); local.push(entry); local.sort((a,b)=>b.score-a.score); localStorage.setItem('hoc_lb_cache',JSON.stringify(local.slice(0,200))); return false;
+    const local = JSON.parse(localStorage.getItem('hoc_lb_cache') || '[]');
+    local.push(entry); local.sort((a,b) => b.score - a.score);
+    localStorage.setItem('hoc_lb_cache', JSON.stringify(local.slice(0,100)));
+    return false;
   }
 }
 function renderLeaderboard() {
