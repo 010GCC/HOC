@@ -93,8 +93,8 @@
   #hud { position: absolute; top: 0; left: 0; width: 100%; z-index: 5; pointer-events: none; }
   #hudTop {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 16px; background: rgba(0,0,0,0.85);
-    border-bottom: 1px solid rgba(var(--ar),var(--ag),var(--ab),0.4); height: 64px;
+    padding: 8px 16px; background: transparent;
+    height: 64px;
   }
   #hudTopLeft {
     display: flex; flex-direction: column; justify-content: center; gap: 2px;
@@ -106,17 +106,18 @@
   #hudBottom {
     position: absolute; bottom: 0; left: 0; width: 100%;
     display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 16px; background: rgba(0,0,0,0.85);
-    border-top: 1px solid rgba(var(--ar),var(--ag),var(--ab),0.4); height: 40px;
+    padding: 6px 16px; background: transparent;
+    height: 40px;
   }
   #scoreDisplay {
     font-family: 'Orbitron', sans-serif; font-size: clamp(18px,3vw,32px); font-weight: 700;
-    color: #fff; text-shadow: 0 0 10px var(--accent), 0 0 20px rgba(var(--ar),var(--ag),var(--ab),0.5);
+    color: #fff; text-shadow: 0 1px 4px #000, 0 0 8px #000, 0 0 10px var(--accent), 0 0 20px rgba(var(--ar),var(--ag),var(--ab),0.5);
   }
-  #spdDisplay { font-size: clamp(9px,1.2vw,12px); color: rgba(255,255,255,0.6); letter-spacing: 0.05em; }
+  #spdDisplay { font-size: clamp(9px,1.2vw,12px); color: rgba(255,255,255,0.6); letter-spacing: 0.05em; text-shadow: 0 1px 4px #000, 0 0 8px #000; }
   #levelDisplay {
     font-family: 'Orbitron', sans-serif; font-size: clamp(9px,1.2vw,12px); font-weight: 700;
     color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-align: right;
+    text-shadow: 0 1px 4px #000, 0 0 8px #000;
   }
   #trickCallout {
     font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.8vw,16px); font-weight: 700;
@@ -477,7 +478,7 @@ const PLAYER = {
   onGround: false, jumps: 0, maxJumps: 2,
   ducking: false, dashing: false, dashTimer: 0, dashCooldown: 0,
   DASH_DURATION: 0.3, DASH_COOLDOWN: 4,
-  GRAVITY: 1200, JUMP_FORCE: -620, JUMP_HOLD_FORCE: -200,
+  GRAVITY: 1200, JUMP_FORCE: -740, JUMP_HOLD_FORCE: -200,
   jumpHeld: false, jumpHoldTimer: 0, MAX_JUMP_HOLD: 0.2,
   deadAnim: 0, bobTimer: 0, spinAngle: 0, spinning: false, spinTimer: 0,
   floatTimer: 0, floating: false, floatY: 0,
@@ -487,7 +488,7 @@ const PLAYER = {
 };
 
 // Physics constant: time player is airborne on a full single jump
-const JUMP_AIR_TIME = (2 * 620) / 1200; // ~1.033 seconds
+const JUMP_AIR_TIME = (2 * 740) / 1200; // ~1.233 seconds
 
 function resetPlayer() {
   PLAYER.defaultX = W * 0.18;
@@ -505,6 +506,8 @@ function resetPlayer() {
 }
 
 // ==================== OBSTACLES ====================
+const SCALE = 1.7;
+
 const OBSTACLE_TYPES = [
   { name:'STAPLER',        w:28, h:20, shape:'stapler'    },
   { name:'KEYBOARD',       w:60, h:18, shape:'keyboard'   },
@@ -518,7 +521,7 @@ const OBSTACLE_TYPES = [
   { name:'WATER COOLER',   w:28, h:64, shape:'cooler'     },
 ];
 
-let obstacles = [], workerDrops = [], debris = [];
+let obstacles = [], debris = [];
 let obstacleSpawnTimer = 0, nextObstacleInterval = 2.5;
 
 function isLowObstacle(type)  { return type.h <= 30; }
@@ -531,14 +534,6 @@ function getObstacleForPhase() {
   return OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
 }
 
-function spawnObstacleWithWorker(type, x) {
-  workerDrops.push({
-    x, y: H * 0.1,
-    targetY: FLOOR_Y - type.h,
-    timer: 2.0, obstacleType: type, dropProgress: 0, dropped: false,
-  });
-}
-
 function trySpawnObstacle(dt) {
   // FIX: grace period — no obstacles for first 3 seconds
   if (gameTime < 3.0) return;
@@ -547,34 +542,34 @@ function trySpawnObstacle(dt) {
   if (obstacleSpawnTimer < nextObstacleInterval) return;
   obstacleSpawnTimer = 0;
 
-  // Check that last obstacle/worker isn't too close to spawn point
-  const allX = [...obstacles.map(o => o.x), ...workerDrops.map(w => w.x)];
+  // Check that last obstacle isn't too close to spawn point
+  const allX = obstacles.map(o => o.x);
   const lastX = allX.length > 0 ? Math.max(...allX) : -9999;
   if (W + 80 - lastX < 300) return;
 
   const type = getObstacleForPhase();
-  spawnObstacleWithWorker(type, W + 80);
+  obstacles.push({x: W+80, y: FLOOR_Y - type.h * SCALE, w: type.w * SCALE, h: type.h * SCALE, type, checked: false, nearMissed: false});
 
-  // After 45s: occasionally spawn a close second obstacle (double-jump challenge)
-  const pairChance = gameTime < 45 ? 0 : gameTime < 90 ? 0.20 : 0.30;
+  // Start pair spawning earlier
+  const pairChance = gameTime < 30 ? 0 : gameTime < 60 ? 0.22 : 0.32;
   if (Math.random() < pairChance) {
     const type2 = getObstacleForPhase();
     // Gap is tight: player must double-jump mid-air over the second
-    const pairGap = type.w + 50 + Math.random() * 60;
-    spawnObstacleWithWorker(type2, W + 80 + pairGap);
+    const pairGap = type.w * SCALE + 50 + Math.random() * 60;
+    obstacles.push({x: W+80+pairGap, y: FLOOR_Y - type2.h * SCALE, w: type2.w * SCALE, h: type2.h * SCALE, type: type2, checked: false, nearMissed: false});
     // Long recovery gap after a pair
     nextObstacleInterval = JUMP_AIR_TIME * 2.8 + Math.random() * 0.8;
     return;
   }
 
   // Normal single-obstacle interval — scale down over time, always safe
-  const base = gameTime < 15 ? 4.0
-             : gameTime < 30 ? 3.5
-             : gameTime < 60 ? 3.0
-             : gameTime < 120 ? 2.5
-             : 2.0;
+  const base = gameTime < 15 ? 3.0
+             : gameTime < 30 ? 2.5
+             : gameTime < 60 ? 2.0
+             : gameTime < 120 ? 1.7
+             : 1.4;
   // Minimum: player must have enough time to jump + land before next arrives
-  const minSafe = JUMP_AIR_TIME * 1.3; // ~1.34s
+  const minSafe = JUMP_AIR_TIME * 1.3;
   nextObstacleInterval = Math.max(minSafe, base + (Math.random() * 0.8 - 0.2));
 }
 
@@ -588,7 +583,7 @@ function tryWaveEvent(dt) {
       waveTimer = 0.8;
       waveCount++;
       const type = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
-      obstacles.push({ x: W + 60 + waveCount * 220, y: FLOOR_Y - type.h, w: type.w, h: type.h, type, checked: false, nearMissed: false });
+      obstacles.push({ x: W + 60 + waveCount * 220, y: FLOOR_Y - type.h * SCALE, w: type.w * SCALE, h: type.h * SCALE, type, checked: false, nearMissed: false });
     }
     if (waveCount >= 5) { waveActive = false; waveCooldown = 6; hideWaveWarning(); }
     return;
@@ -681,114 +676,332 @@ function drawBgLayers() {
 // ==================== OBSTACLES DRAWING ====================
 function drawObstacleShape(ctx, type, x, y, w, h) {
   ctx.strokeStyle = ACCENT;
-  ctx.fillStyle   = '#1a0026';
-  ctx.lineWidth   = 2;
+  ctx.lineWidth   = 2.5;
   ctx.shadowColor = ACCENT;
-  ctx.shadowBlur  = 10;
+  ctx.shadowBlur  = 18;
 
   switch(type.shape) {
-    case 'stapler':
+    case 'stapler': {
+      // Dark tinted background
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y, w, h);
+      // Bottom arm — solid accent fill
       ctx.fillStyle = ACCENT;
-      ctx.beginPath(); ctx.rect(x, y+h*0.4, w, h*0.4); ctx.fill();
-      ctx.fillStyle = ac(0.6);
-      ctx.beginPath(); ctx.rect(x, y, w, h*0.35); ctx.fill();
-      ctx.strokeRect(x, y, w, h);
+      ctx.fillRect(x, y+h*0.45, w, h*0.38);
+      ctx.strokeRect(x, y+h*0.45, w, h*0.38);
+      // Top arm — slightly lighter
+      ctx.fillStyle = ac(0.7);
+      ctx.fillRect(x, y, w, h*0.38);
+      ctx.strokeRect(x, y, w, h*0.38);
+      // Rivets
+      ctx.fillStyle = ACCENT;
+      ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.arc(x+w*0.15, y+h*0.19, 2.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x+w*0.85, y+h*0.19, 2.5, 0, Math.PI*2); ctx.fill();
+      // Logo text
+      ctx.save();
+      ctx.shadowBlur = 0;
+      ctx.font = `bold ${Math.max(5, Math.min(h*0.18, 9))}px 'Share Tech Mono', monospace`;
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('SWINGLINE', x + w/2, y + h*0.64);
+      ctx.restore();
       break;
+    }
 
-    case 'keyboard':
+    case 'keyboard': {
+      // Body fill
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y, w, h);
       ctx.strokeRect(x, y, w, h);
+      // 3 rows of keys
       ctx.lineWidth = 1;
-      for (let kx = 0; kx < 5; kx++) {
-        for (let ky = 0; ky < 2; ky++) {
-          const kw=(w-8)/5, kh=(h-6)/2;
-          ctx.strokeRect(x+4+kx*(kw+1), y+3+ky*(kh+1), kw, kh);
+      const rows = 3, cols = 5;
+      const kw = (w - 8) / cols, kh = (h - 8) / (rows + 0.5);
+      for (let ky = 0; ky < rows; ky++) {
+        for (let kx = 0; kx < cols; kx++) {
+          ctx.fillStyle = ac(0.25);
+          ctx.fillRect(x+4+kx*(kw+0.8), y+3+ky*(kh+1), kw-1, kh-1);
+          ctx.strokeRect(x+4+kx*(kw+0.8), y+3+ky*(kh+1), kw-1, kh-1);
         }
       }
-      ctx.lineWidth = 2;
+      // Space bar
+      ctx.fillStyle = ac(0.3);
+      ctx.fillRect(x+w*0.2, y+h-kh-1, w*0.6, kh-1);
+      ctx.strokeRect(x+w*0.2, y+h-kh-1, w*0.6, kh-1);
+      ctx.lineWidth = 2.5;
       break;
+    }
 
-    case 'monitor':
+    case 'monitor': {
+      // Screen body fill
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y, w, h*0.75);
       ctx.strokeRect(x, y, w, h*0.75);
-      ctx.fillStyle = ac(0.08); ctx.fillRect(x, y, w, h*0.75);
+      // Bezel inset
+      ctx.strokeStyle = ac(0.4);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x+4, y+4, w-8, h*0.75-8);
+      // Scanlines fill inside screen
+      ctx.fillStyle = ac(0.07);
+      ctx.fillRect(x+4, y+4, w-8, h*0.75-8);
+      ctx.strokeStyle = ac(0.35);
+      for (let i = 0; i < 6; i++) {
+        const ly = y+6+i*(h*0.75-14)/6;
+        ctx.beginPath(); ctx.moveTo(x+6, ly); ctx.lineTo(x+w-6, ly); ctx.stroke();
+      }
+      // Glowing screen content lines
+      ctx.strokeStyle = ACCENT;
+      ctx.shadowBlur = 18;
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 3; i++) {
+        const ly = y+10+i*(h*0.75-20)/3;
+        ctx.beginPath(); ctx.moveTo(x+8, ly); ctx.lineTo(x+w*0.7, ly); ctx.stroke();
+      }
+      ctx.lineWidth = 2.5;
+      // Stand neck
+      ctx.strokeStyle = ACCENT;
       ctx.beginPath();
       ctx.moveTo(x+w/2-8, y+h*0.75); ctx.lineTo(x+w/2, y+h*0.88); ctx.lineTo(x+w/2+8, y+h*0.75); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x+w/2-14, y+h*0.88); ctx.lineTo(x+w/2+14, y+h*0.88); ctx.stroke();
-      ctx.lineWidth = 1; ctx.strokeStyle = ac(0.4);
-      for (let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(x+6, y+6+i*(h*0.75-12)/4); ctx.lineTo(x+w-6, y+6+i*(h*0.75-12)/4); ctx.stroke(); }
-      ctx.lineWidth = 2; ctx.strokeStyle = ACCENT;
+      // Base platform
+      ctx.fillStyle = ac(0.3);
+      ctx.fillRect(x+w/2-16, y+h*0.88, 32, h*0.08);
+      ctx.strokeRect(x+w/2-16, y+h*0.88, 32, h*0.08);
       break;
+    }
 
-    case 'chair':
+    case 'chair': {
+      // Seat cushion fill
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x+4, y+h*0.35, w-8, h*0.18);
       ctx.strokeRect(x+4, y+h*0.35, w-8, h*0.18);
+      // Backrest fill
+      ctx.fillStyle = ac(0.2);
+      ctx.fillRect(x+w*0.3, y, w*0.35, h*0.38);
       ctx.strokeRect(x+w*0.3, y, w*0.35, h*0.38);
-      ctx.beginPath();
-      ctx.moveTo(x+w*0.2, y+h*0.53); ctx.lineTo(x+w*0.1, y+h*0.85);
-      ctx.moveTo(x+w*0.8, y+h*0.53); ctx.lineTo(x+w*0.9, y+h*0.85);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(x+w*0.1, y+h*0.88, 5, 0, Math.PI*2);
-      ctx.arc(x+w*0.9, y+h*0.88, 5, 0, Math.PI*2);
-      ctx.stroke();
-      break;
-
-    case 'cabinet':
-      ctx.strokeRect(x, y, w, h);
-      ctx.lineWidth = 1.5;
-      for (let i=0; i<3; i++) {
-        const dy = y+i*(h/3)+4; ctx.strokeRect(x+4, dy, w-8, h/3-8);
-        ctx.beginPath(); ctx.moveTo(x+w/2-6, dy+(h/3-8)/2); ctx.lineTo(x+w/2+6, dy+(h/3-8)/2); ctx.stroke();
-      }
+      // Armrests
+      ctx.strokeStyle = ac(0.7);
       ctx.lineWidth = 2;
-      break;
-
-    case 'mug':
-      ctx.beginPath(); ctx.moveTo(x+4,y); ctx.lineTo(x+w-4,y); ctx.lineTo(x+w,y+h); ctx.lineTo(x,y+h); ctx.closePath(); ctx.stroke();
-      ctx.beginPath(); ctx.arc(x+w+4, y+h*0.4, h*0.25, -Math.PI/2, Math.PI/2); ctx.stroke();
-      ctx.lineWidth=1; ctx.strokeStyle=ac(0.4);
       ctx.beginPath();
-      ctx.moveTo(x+w*0.35,y-4); ctx.quadraticCurveTo(x+w*0.25,y-10,x+w*0.35,y-16);
-      ctx.moveTo(x+w*0.6,y-4);  ctx.quadraticCurveTo(x+w*0.7,y-10,x+w*0.6,y-16);
-      ctx.stroke(); ctx.lineWidth=2; ctx.strokeStyle=ACCENT;
-      break;
-
-    case 'papers':
-      for (let i=2; i>=0; i--) {
-        ctx.strokeStyle = i===0 ? ACCENT : ac(0.4);
-        ctx.strokeRect(x+i*2, y+i*3, w-i*2, h-i*2);
+      ctx.moveTo(x+4, y+h*0.35); ctx.lineTo(x+4, y+h*0.28); ctx.lineTo(x+w*0.28, y+h*0.28);
+      ctx.moveTo(x+w-4, y+h*0.35); ctx.lineTo(x+w-4, y+h*0.28); ctx.lineTo(x+w*0.72, y+h*0.28);
+      ctx.stroke();
+      ctx.strokeStyle = ACCENT;
+      // 5-point star base — central pole
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(x+w*0.5, y+h*0.53); ctx.lineTo(x+w*0.5, y+h*0.82); ctx.stroke();
+      // 5 arms radiating from center
+      const baseAngles = [270, 270+72, 270+144, 270+216, 270+288];
+      const armLen = w * 0.38;
+      const bx2 = x+w*0.5, by2 = y+h*0.82;
+      for (const ang of baseAngles) {
+        const rad = ang * Math.PI / 180;
+        const ex = bx2 + Math.cos(rad) * armLen;
+        const ey = by2 + Math.sin(rad) * armLen * 0.55;
+        ctx.beginPath(); ctx.moveTo(bx2, by2); ctx.lineTo(ex, ey); ctx.stroke();
+        // Wheel arc at end
+        ctx.beginPath(); ctx.arc(ex, ey, 4, 0, Math.PI*2); ctx.stroke();
       }
-      ctx.strokeStyle=ACCENT; ctx.lineWidth=1;
-      for (let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(x+6, y+6+i*4); ctx.lineTo(x+w-6, y+6+i*4); ctx.stroke(); }
-      ctx.lineWidth=2;
       break;
+    }
 
-    case 'powerstrip':
-      ctx.strokeRect(x, y+h*0.2, w, h*0.6);
-      ctx.lineWidth=1.5;
-      for (let i=0; i<4; i++) { const ox=x+8+i*(w-16)/3; ctx.beginPath(); ctx.arc(ox, y+h*0.5, 4, 0, Math.PI*2); ctx.stroke(); }
-      ctx.beginPath(); ctx.moveTo(x,y+h*0.5); ctx.lineTo(x-12,y+h*0.5); ctx.stroke();
-      ctx.lineWidth=2;
-      break;
-
-    case 'printer':
-      ctx.strokeRect(x, y+h*0.3, w, h*0.7);
-      ctx.strokeRect(x+6, y, w-12, h*0.35);
-      ctx.fillStyle=ac(0.2); ctx.fillRect(x+12, y+4, w-24, h*0.2);
-      ctx.strokeRect(x+12, y+4, w-24, h*0.2);
-      ctx.lineWidth=1;
-      ctx.beginPath(); ctx.arc(x+w-14, y+h*0.6, 4, 0, Math.PI*2); ctx.arc(x+w-26, y+h*0.6, 4, 0, Math.PI*2); ctx.stroke();
-      ctx.lineWidth=2;
-      break;
-
-    case 'cooler':
+    case 'cabinet': {
+      // Tall body fill
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeRect(x, y, w, h);
+      // Metal corner accents
+      ctx.strokeStyle = ac(0.5);
+      ctx.lineWidth = 1.5;
+      const ca = 6;
       ctx.beginPath();
-      ctx.moveTo(x+w*0.25,y); ctx.lineTo(x+w*0.75,y); ctx.lineTo(x+w*0.85,y+h*0.5);
-      ctx.lineTo(x+w*0.85,y+h*0.7); ctx.lineTo(x+w*0.15,y+h*0.7); ctx.lineTo(x+w*0.15,y+h*0.5);
-      ctx.closePath(); ctx.stroke();
-      ctx.fillStyle=ac(0.08); ctx.fill();
-      ctx.strokeRect(x+4, y+h*0.68, w-8, h*0.32);
-      ctx.beginPath(); ctx.moveTo(x+w*0.35,y+h*0.82); ctx.lineTo(x+w*0.35,y+h*0.9); ctx.lineTo(x+w*0.45,y+h*0.9); ctx.stroke();
+      ctx.moveTo(x, y+ca); ctx.lineTo(x, y); ctx.lineTo(x+ca, y);
+      ctx.moveTo(x+w-ca, y); ctx.lineTo(x+w, y); ctx.lineTo(x+w, y+ca);
+      ctx.moveTo(x, y+h-ca); ctx.lineTo(x, y+h); ctx.lineTo(x+ca, y+h);
+      ctx.moveTo(x+w-ca, y+h); ctx.lineTo(x+w, y+h); ctx.lineTo(x+w, y+h-ca);
+      ctx.stroke();
+      // 3 labeled drawers with handles
+      ctx.strokeStyle = ACCENT;
+      ctx.lineWidth = 2.5;
+      const drawerLabels = ['TOP', 'MID', 'BOT'];
+      for (let i = 0; i < 3; i++) {
+        const dy = y + i*(h/3) + 4;
+        const dh = h/3 - 8;
+        ctx.fillStyle = ac(0.1);
+        ctx.fillRect(x+4, dy, w-8, dh);
+        ctx.strokeRect(x+4, dy, w-8, dh);
+        // Handle
+        ctx.fillStyle = ac(0.6);
+        ctx.fillRect(x+w/2-8, dy+dh/2-3, 16, 6);
+        ctx.strokeRect(x+w/2-8, dy+dh/2-3, 16, 6);
+        // Label
+        ctx.save();
+        ctx.shadowBlur = 0;
+        ctx.font = `bold ${Math.max(5, Math.min(dh*0.3, 8))}px 'Share Tech Mono', monospace`;
+        ctx.fillStyle = ac(0.5);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(drawerLabels[i], x+w/2, dy+3);
+        ctx.restore();
+      }
       break;
+    }
+
+    case 'mug': {
+      // Tapered trapezoid body filled
+      ctx.fillStyle = ac(0.15);
+      ctx.beginPath();
+      ctx.moveTo(x+w*0.1, y); ctx.lineTo(x+w*0.9, y);
+      ctx.lineTo(x+w, y+h); ctx.lineTo(x, y+h); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      // Handle as arc
+      ctx.beginPath(); ctx.arc(x+w+4, y+h*0.4, h*0.25, -Math.PI/2, Math.PI/2); ctx.stroke();
+      // Logo circle on side
+      ctx.fillStyle = ac(0.3);
+      ctx.beginPath(); ctx.arc(x+w*0.4, y+h*0.55, h*0.15, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      // Steam curls above
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = ac(0.4);
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.moveTo(x+w*0.3, y-2); ctx.quadraticCurveTo(x+w*0.2, y-10, x+w*0.3, y-18);
+      ctx.moveTo(x+w*0.55, y-2); ctx.quadraticCurveTo(x+w*0.65, y-10, x+w*0.55, y-18);
+      ctx.stroke();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = ACCENT;
+      break;
+    }
+
+    case 'papers': {
+      // Stacked sheets with offsets
+      for (let i = 2; i >= 0; i--) {
+        ctx.fillStyle = i === 0 ? ac(0.2) : ac(0.08);
+        ctx.fillRect(x+i*3, y+i*4, w-i*2, h-i*2);
+        ctx.strokeStyle = i === 0 ? ACCENT : ac(0.4);
+        ctx.strokeRect(x+i*3, y+i*4, w-i*2, h-i*2);
+      }
+      // Ruled lines visible on top sheet
+      ctx.strokeStyle = ac(0.5);
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 5; i++) {
+        ctx.beginPath();
+        ctx.moveTo(x+8, y+4+i*(h-12)/5);
+        ctx.lineTo(x+w-6, y+4+i*(h-12)/5);
+        ctx.stroke();
+      }
+      // Top sheet corner folded
+      ctx.fillStyle = ac(0.35);
+      ctx.beginPath();
+      ctx.moveTo(x+w-10, y+4); ctx.lineTo(x+w-4, y+4); ctx.lineTo(x+w-4, y+14); ctx.closePath();
+      ctx.fill();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = ACCENT;
+      break;
+    }
+
+    case 'powerstrip': {
+      // Filled body
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y+h*0.15, w, h*0.7);
+      ctx.strokeRect(x, y+h*0.15, w, h*0.7);
+      // 6 outlet circles with two-prong holes
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 6; i++) {
+        const ox = x + 6 + i*(w-12)/5.5;
+        const oy = y + h*0.5;
+        ctx.fillStyle = ac(0.25);
+        ctx.beginPath(); ctx.arc(ox, oy, 5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        // Two prong holes
+        ctx.fillStyle = '#000';
+        ctx.shadowBlur = 0;
+        ctx.fillRect(ox-3, oy-4, 1.5, 3);
+        ctx.fillRect(ox+1.5, oy-4, 1.5, 3);
+        ctx.shadowBlur = 18;
+      }
+      // Power cord
+      ctx.strokeStyle = ac(0.5);
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, y+h*0.5); ctx.lineTo(x-14, y+h*0.5); ctx.stroke();
+      // LED indicator dot
+      ctx.fillStyle = '#00ff88';
+      ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(x+w-6, y+h*0.5, 3, 0, Math.PI*2); ctx.fill();
+      ctx.shadowColor = ACCENT; ctx.shadowBlur = 18;
+      ctx.strokeStyle = ACCENT; ctx.lineWidth = 2.5;
+      break;
+    }
+
+    case 'printer': {
+      // Main body fill
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x, y+h*0.28, w, h*0.72);
+      ctx.strokeRect(x, y+h*0.28, w, h*0.72);
+      // Paper tray on top
+      ctx.fillStyle = ac(0.1);
+      ctx.fillRect(x+6, y, w-12, h*0.33);
+      ctx.strokeRect(x+6, y, w-12, h*0.33);
+      // Output slot
+      ctx.fillStyle = ac(0.2);
+      ctx.fillRect(x+10, y+h*0.28-3, w-20, 6);
+      ctx.strokeRect(x+10, y+h*0.28-3, w-20, 6);
+      // Control panel with buttons
+      ctx.lineWidth = 1;
+      ctx.fillStyle = ac(0.25);
+      ctx.fillRect(x+w*0.55, y+h*0.4, w*0.38, h*0.22);
+      ctx.strokeRect(x+w*0.55, y+h*0.4, w*0.38, h*0.22);
+      // Indicator button
+      ctx.fillStyle = ACCENT;
+      ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(x+w*0.72, y+h*0.51, 4, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 18;
+      // Small buttons
+      ctx.fillStyle = ac(0.6);
+      ctx.beginPath(); ctx.arc(x+w*0.62, y+h*0.51, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x+w*0.83, y+h*0.51, 3, 0, Math.PI*2); ctx.fill();
+      ctx.lineWidth = 2.5;
+      break;
+    }
+
+    case 'cooler': {
+      // Water jug on top — filled oval
+      ctx.fillStyle = ac(0.2);
+      ctx.beginPath();
+      ctx.ellipse(x+w/2, y+h*0.18, w*0.3, h*0.2, 0, 0, Math.PI*2);
+      ctx.fill(); ctx.stroke();
+      // Water level inside jug
+      ctx.fillStyle = ac(0.4);
+      ctx.beginPath();
+      ctx.ellipse(x+w/2, y+h*0.22, w*0.22, h*0.12, 0, 0, Math.PI*2);
+      ctx.fill();
+      // Base cabinet with filled body
+      ctx.fillStyle = ac(0.15);
+      ctx.fillRect(x+w*0.08, y+h*0.36, w*0.84, h*0.64);
+      ctx.strokeRect(x+w*0.08, y+h*0.36, w*0.84, h*0.64);
+      // Jug neck connecting to base
+      ctx.fillStyle = ac(0.3);
+      ctx.fillRect(x+w*0.35, y+h*0.36, w*0.3, h*0.06);
+      ctx.strokeRect(x+w*0.35, y+h*0.36, w*0.3, h*0.06);
+      // Spigot
+      ctx.strokeStyle = ac(0.7);
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x+w*0.3, y+h*0.72); ctx.lineTo(x+w*0.3, y+h*0.82); ctx.lineTo(x+w*0.15, y+h*0.82);
+      ctx.stroke();
+      ctx.strokeStyle = ACCENT; ctx.lineWidth = 2.5;
+      break;
+    }
   }
+
+  // Obstacle name label beneath
+  ctx.save();
+  ctx.font = `bold ${Math.max(8, Math.min(h*0.12, 11))}px 'Share Tech Mono', monospace`;
+  ctx.fillStyle = ac(0.6);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.shadowBlur = 0;
+  ctx.fillText(type.name, x + w/2, y + h + 2);
+  ctx.restore();
+
   ctx.shadowBlur = 0;
 }
 
@@ -832,22 +1045,6 @@ function drawPlayer() {
   else { ctx2d.lineTo(bx+p.w*0.7,btY+10); ctx2d.moveTo(btX+2,btY+8); ctx2d.lineTo(bx+p.w*0.65,btY+20); }
   ctx2d.stroke();
   ctx2d.shadowBlur=0; ctx2d.restore();
-}
-
-// ==================== DRAW WORKER ====================
-function drawWorker(wd) {
-  ctx2d.save();
-  ctx2d.strokeStyle=ac(0.7); ctx2d.fillStyle=ac(0.7);
-  ctx2d.lineWidth=2; ctx2d.lineCap='round';
-  const wx=wd.x+20, wy=wd.y;
-  ctx2d.beginPath(); ctx2d.arc(wx,wy,7,0,Math.PI*2); ctx2d.stroke();
-  ctx2d.beginPath(); ctx2d.moveTo(wx,wy+7); ctx2d.lineTo(wx,wy+28); ctx2d.stroke();
-  ctx2d.beginPath(); ctx2d.moveTo(wx,wy+14); ctx2d.lineTo(wx-12,wy+22); ctx2d.moveTo(wx,wy+14); ctx2d.lineTo(wx+12,wy+22); ctx2d.stroke();
-  ctx2d.beginPath(); ctx2d.moveTo(wx,wy+28); ctx2d.lineTo(wx-8,wy+44); ctx2d.moveTo(wx,wy+28); ctx2d.lineTo(wx+8,wy+44); ctx2d.stroke();
-  const t=wd.obstacleType, scale=0.4;
-  ctx2d.save(); ctx2d.scale(scale,scale);
-  drawObstacleShape(ctx2d, t, (wx-t.w/2*scale)/scale - wx*(1/scale-1), (wy+24)/scale, t.w, t.h);
-  ctx2d.restore(); ctx2d.restore();
 }
 
 // ==================== PARTICLES ====================
@@ -1026,7 +1223,7 @@ function showGameOver() {
 // ==================== GAME LOOP ====================
 function initGame() {
   resizeCanvas(); resetPlayer();
-  obstacles=[]; workerDrops=[]; debris=[];
+  obstacles=[]; debris=[];
   score=0; gameTime=0; speed=BASE_SPEED; lastSpeedTick=0;
   multiplier=1; multiplierTimer=0; tokens=0;
   trickBonusActive=false; trickBonusTimer=0;
@@ -1109,15 +1306,6 @@ function update(dt) {
     if (trickWindowDuration<=0) { trickWindowOpen=false; trickWindowDuration=0; clearCallout(); document.getElementById('tbTrick').classList.remove('trick-active'); }
   }
   updatePlayer(dt);
-  for (const wd of workerDrops) {
-    wd.timer-=dt; wd.dropProgress=Math.max(0,1-wd.timer/2.0);
-    if (!wd.dropped && wd.timer<=0) {
-      wd.dropped=true;
-      obstacles.push({x:wd.x, y:wd.targetY, w:wd.obstacleType.w, h:wd.obstacleType.h, type:wd.obstacleType, checked:false, nearMissed:false});
-    }
-    wd.x-=speed*dt;
-  }
-  workerDrops=workerDrops.filter(wd=>wd.x>-200 && wd.timer>-1);
   for (const obs of obstacles) obs.x-=speed*dt;
   obstacles=obstacles.filter(obs=>obs.x+obs.w>-100);
   trySpawnObstacle(dt);
@@ -1163,14 +1351,20 @@ function render() {
   ctx2d.save();
   if (shakeTimer>0) { ctx2d.translate((Math.random()-0.5)*shakeIntensity*2,(Math.random()-0.5)*shakeIntensity*2); }
   ctx2d.fillStyle='#000'; ctx2d.fillRect(0,0,W,H);
+
+  // Watermark
+  ctx2d.save();
+  ctx2d.globalAlpha = 0.045;
+  ctx2d.fillStyle = '#ffffff';
+  ctx2d.textAlign = 'center';
+  ctx2d.textBaseline = 'middle';
+  const wmSize = Math.min(W * 0.13, H * 0.22);
+  ctx2d.font = `900 ${Math.round(wmSize)}px Orbitron, sans-serif`;
+  ctx2d.fillText('HORIZONTAL', W/2, H * 0.38);
+  ctx2d.fillText('OFFICE CHAIR', W/2, H * 0.62);
+  ctx2d.restore();
+
   drawBgLayers();
-  for (const wd of workerDrops) {
-    if (!wd.dropped) {
-      const cy=H*0.1+(wd.targetY-H*0.1)*wd.dropProgress;
-      ctx2d.save(); ctx2d.globalAlpha=0.7+wd.dropProgress*0.3;
-      drawWorker({...wd,y:cy}); ctx2d.restore();
-    }
-  }
   for (const obs of obstacles) { ctx2d.save(); drawObstacleShape(ctx2d,obs.type,obs.x,obs.y,obs.w,obs.h); ctx2d.restore(); }
   drawDebris();
   drawPlayer();
