@@ -1448,7 +1448,7 @@ function startGame() {
 async function fetchLeaderboard() {
   const statusEl=document.getElementById('lbStatus'); statusEl.textContent='LOADING...';
   try {
-    const snap = await db.collection('hoc_scores').orderBy('score','desc').limit(100).get();
+    const snap = await db.collection('hoc-scores').orderBy('score','desc').limit(100).get();
     leaderboardData = snap.docs.map(d => d.data());
     localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData));
     statusEl.textContent = `${leaderboardData.length} ENTRIES`;
@@ -1462,7 +1462,7 @@ async function fetchLeaderboard() {
 async function submitScore(name, scoreVal) {
   const entry = { name: name.toUpperCase().slice(0,12), score: Math.floor(scoreVal), date: new Date().toISOString().slice(0,10) };
   try {
-    await db.collection('hoc_scores').add(entry);
+    await db.collection('hoc-scores').add(entry);
     leaderboardData.push(entry);
     leaderboardData.sort((a,b) => b.score - a.score);
     localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData.slice(0,100)));
