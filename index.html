@@ -340,16 +340,19 @@
 <script>
 // ==================== CONFIG ====================
 // ==================== FIREBASE ====================
-const firebaseConfig = {
-  apiKey: "AIzaSyDJ193parkNmOdbybvLT78qADTbMW1oj-0",
-  authDomain: "hoc-game.firebaseapp.com",
-  projectId: "hoc-game",
-  storageBucket: "hoc-game.firebasestorage.app",
-  messagingSenderId: "783200966246",
-  appId: "1:783200966246:web:c74caf6bb9cd974adeffa7"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db = null;
+try {
+  const firebaseConfig = {
+    apiKey: "AIzaSyDJ193parkNmOdbybvLT78qADTbMW1oj-0",
+    authDomain: "hoc-game.firebaseapp.com",
+    projectId: "hoc-game",
+    storageBucket: "hoc-game.firebasestorage.app",
+    messagingSenderId: "783200966246",
+    appId: "1:783200966246:web:c74caf6bb9cd974adeffa7"
+  };
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+} catch(e) { console.warn('Firebase init failed:', e); }
 
 // ==================== ACCENT COLOR SYSTEM ====================
 let ACCENT = '#ff2d78';
@@ -1447,13 +1450,16 @@ function startGame() {
 // ==================== LEADERBOARD ====================
 async function fetchLeaderboard() {
   const statusEl=document.getElementById('lbStatus'); statusEl.textContent='LOADING...';
+  if (!db) { statusEl.textContent='OFFLINE MODE'; leaderboardData=JSON.parse(localStorage.getItem('hoc_lb_cache')||'[]'); renderLeaderboard(); return; }
   try {
-    const snap = await db.collection('hoc-scores').orderBy('score','desc').limit(100).get();
+    const timeout = new Promise((_,reject) => setTimeout(() => reject(new Error('timeout')), 6000));
+    const snap = await Promise.race([db.collection('hoc-scores').orderBy('score','desc').limit(100).get(), timeout]);
     leaderboardData = snap.docs.map(d => d.data());
     localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData));
     statusEl.textContent = `${leaderboardData.length} ENTRIES`;
     renderLeaderboard();
   } catch(e) {
+    console.warn('Leaderboard fetch failed:', e);
     statusEl.textContent = 'OFFLINE MODE';
     leaderboardData = JSON.parse(localStorage.getItem('hoc_lb_cache') || '[]');
     renderLeaderboard();
@@ -1461,16 +1467,22 @@ async function fetchLeaderboard() {
 }
 async function submitScore(name, scoreVal) {
   const entry = { name: name.toUpperCase().slice(0,12), score: Math.floor(scoreVal), date: new Date().toISOString().slice(0,10) };
+  const saveLocal = () => {
+    const local = JSON.parse(localStorage.getItem('hoc_lb_cache') || '[]');
+    local.push(entry); local.sort((a,b) => b.score - a.score);
+    localStorage.setItem('hoc_lb_cache', JSON.stringify(local.slice(0,100)));
+  };
+  if (!db) { saveLocal(); return false; }
   try {
-    await db.collection('hoc-scores').add(entry);
+    const timeout = new Promise((_,reject) => setTimeout(() => reject(new Error('timeout')), 6000));
+    await Promise.race([db.collection('hoc-scores').add(entry), timeout]);
     leaderboardData.push(entry);
     leaderboardData.sort((a,b) => b.score - a.score);
     localStorage.setItem('hoc_lb_cache', JSON.stringify(leaderboardData.slice(0,100)));
     return true;
   } catch(e) {
-    const local = JSON.parse(localStorage.getItem('hoc_lb_cache') || '[]');
-    local.push(entry); local.sort((a,b) => b.score - a.score);
-    localStorage.setItem('hoc_lb_cache', JSON.stringify(local.slice(0,100)));
+    console.warn('Score submit failed:', e);
+    saveLocal();
     return false;
   }
 }
