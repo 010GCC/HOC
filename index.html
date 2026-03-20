@@ -6,6 +6,7 @@
 <title>HORIZONTAL OFFICE CHAIR</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
+  :root { --accent: #ff2d78; --ar: 255; --ag: 45; --ab: 120; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     width: 100%; height: 100%;
@@ -43,7 +44,7 @@
   #titleScreen { overflow: hidden; }
   #titleGrid {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: linear-gradient(rgba(255,45,120,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,45,120,0.07) 1px, transparent 1px);
+    background-image: linear-gradient(rgba(var(--ar),var(--ag),var(--ab),0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--ar),var(--ag),var(--ab),0.07) 1px, transparent 1px);
     background-size: 40px 40px;
     animation: gridScroll 3s linear infinite;
     z-index: 0;
@@ -59,14 +60,14 @@
   #mainTitle {
     font-family: 'Orbitron', sans-serif; font-weight: 900;
     font-size: clamp(28px,6vw,80px); color: #fff;
-    text-shadow: 0 0 20px #ff2d78, 0 0 40px #ff2d78, 0 0 80px rgba(255,45,120,0.5);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent), 0 0 80px rgba(var(--ar),var(--ag),var(--ab),0.5);
     letter-spacing: 0.08em; line-height: 1.1;
     animation: titleGlitch 4s infinite;
   }
   @keyframes titleGlitch {
-    0%,89%,95%,100% { text-shadow: 0 0 20px #ff2d78, 0 0 40px #ff2d78; transform: none; }
-    90% { text-shadow: -3px 0 #ff2d78, 3px 0 rgba(255,45,120,0.5); transform: translateX(3px); }
-    91% { text-shadow: 3px 0 #ff2d78, -3px 0 rgba(255,45,120,0.5); transform: translateX(-3px); clip-path: inset(20% 0 60% 0); }
+    0%,89%,95%,100% { text-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent); transform: none; }
+    90% { text-shadow: -3px 0 var(--accent), 3px 0 rgba(var(--ar),var(--ag),var(--ab),0.5); transform: translateX(3px); }
+    91% { text-shadow: 3px 0 var(--accent), -3px 0 rgba(var(--ar),var(--ag),var(--ab),0.5); transform: translateX(-3px); clip-path: inset(20% 0 60% 0); }
     92% { transform: translateX(0); clip-path: inset(70% 0 10% 0); }
     93% { transform: translateX(2px); clip-path: none; }
     94% { transform: none; }
@@ -76,111 +77,130 @@
     margin: 12px auto 28px; font-size: clamp(10px,1.3vw,13px);
     color: rgba(255,255,255,0.35); letter-spacing: 0.08em; line-height: 2;
   }
-  #controlsHint span { color: #ff2d78; }
+  #controlsHint span { color: var(--accent); }
   .btn {
     font-family: 'Orbitron', sans-serif; font-size: clamp(12px,1.8vw,18px); font-weight: 700;
-    color: #000; background: #ff2d78; border: 2px solid #ff2d78;
+    color: #000; background: var(--accent); border: 2px solid var(--accent);
     padding: 12px 36px; cursor: pointer; letter-spacing: 0.12em; text-transform: uppercase;
     margin: 8px; transition: all 0.1s;
-    box-shadow: 0 0 20px rgba(255,45,120,0.5);
+    box-shadow: 0 0 20px rgba(var(--ar),var(--ag),var(--ab),0.5);
   }
-  .btn:hover { background: #000; color: #ff2d78; box-shadow: 0 0 30px #ff2d78, 0 0 60px rgba(255,45,120,0.3); }
-  .btn-outline { background: #000; color: #ff2d78; }
-  .btn-outline:hover { background: #ff2d78; color: #000; }
+  .btn:hover { background: #000; color: var(--accent); box-shadow: 0 0 30px var(--accent), 0 0 60px rgba(var(--ar),var(--ag),var(--ab),0.3); }
+  .btn-outline { background: #000; color: var(--accent); }
+  .btn-outline:hover { background: var(--accent); color: #000; }
   .btn-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
 
   #hud { position: absolute; top: 0; left: 0; width: 100%; z-index: 5; pointer-events: none; }
   #hudTop {
     display: flex; align-items: center; justify-content: space-between;
     padding: 8px 16px; background: rgba(0,0,0,0.85);
-    border-bottom: 1px solid rgba(255,45,120,0.4); height: 52px;
+    border-bottom: 1px solid rgba(var(--ar),var(--ag),var(--ab),0.4); height: 64px;
+  }
+  #hudTopLeft {
+    display: flex; flex-direction: column; justify-content: center; gap: 2px;
+    min-width: 120px;
+  }
+  #hudTopRight {
+    display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 2px;
   }
   #hudBottom {
     position: absolute; bottom: 0; left: 0; width: 100%;
     display: flex; align-items: center; justify-content: space-between;
     padding: 6px 16px; background: rgba(0,0,0,0.85);
-    border-top: 1px solid rgba(255,45,120,0.4); height: 40px;
+    border-top: 1px solid rgba(var(--ar),var(--ag),var(--ab),0.4); height: 40px;
   }
   #scoreDisplay {
     font-family: 'Orbitron', sans-serif; font-size: clamp(18px,3vw,32px); font-weight: 700;
-    color: #fff; text-shadow: 0 0 10px #ff2d78, 0 0 20px rgba(255,45,120,0.5); min-width: 120px;
+    color: #fff; text-shadow: 0 0 10px var(--accent), 0 0 20px rgba(var(--ar),var(--ag),var(--ab),0.5);
+  }
+  #spdDisplay { font-size: clamp(9px,1.2vw,12px); color: rgba(255,255,255,0.6); letter-spacing: 0.05em; }
+  #levelDisplay {
+    font-family: 'Orbitron', sans-serif; font-size: clamp(9px,1.2vw,12px); font-weight: 700;
+    color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-align: right;
   }
   #trickCallout {
     font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.8vw,16px); font-weight: 700;
-    color: #ff2d78; text-align: center; letter-spacing: 0.1em; text-transform: uppercase;
-    text-shadow: 0 0 10px #ff2d78; flex: 1; animation: calloutGlitch 0.15s ease infinite paused;
+    color: var(--accent); text-align: center; letter-spacing: 0.1em; text-transform: uppercase;
+    text-shadow: 0 0 10px var(--accent); flex: 1; animation: calloutGlitch 0.15s ease infinite paused;
   }
   #trickCallout.glitch { animation-play-state: running; }
   @keyframes calloutGlitch {
     0%,100% { transform: none; } 25% { transform: translateX(-2px); } 50% { transform: translateX(2px); }
   }
-  #skillTokens { display: flex; gap: 6px; align-items: center; min-width: 80px; justify-content: flex-end; }
+  #skillTokens { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
   .token-square {
     width: clamp(12px,2vw,18px); height: clamp(12px,2vw,18px);
-    border: 2px solid rgba(255,45,120,0.4); background: transparent; transition: all 0.2s;
+    border: 2px solid rgba(var(--ar),var(--ag),var(--ab),0.4); background: transparent; transition: all 0.2s;
   }
-  .token-square.filled { background: #ff2d78; box-shadow: 0 0 8px #ff2d78; }
+  .token-square.filled { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
   .token-square.pulse { animation: tokenPulse 0.6s ease infinite alternate; }
-  @keyframes tokenPulse { 0% { box-shadow: 0 0 8px #ff2d78; } 100% { box-shadow: 0 0 24px #ff2d78; transform: scale(1.15); } }
-  #spdDisplay { font-size: clamp(10px,1.5vw,14px); color: rgba(255,255,255,0.8); letter-spacing: 0.05em; }
-  #brandingDisplay { font-family: 'Orbitron', sans-serif; font-size: clamp(8px,1.2vw,13px); font-weight: 700; letter-spacing: 0.15em; color: rgba(255,45,120,0.5); text-align: center; flex: 1; }
+  @keyframes tokenPulse { 0% { box-shadow: 0 0 8px var(--accent); } 100% { box-shadow: 0 0 24px var(--accent); transform: scale(1.15); } }
+  #brandingDisplay { font-family: 'Orbitron', sans-serif; font-size: clamp(8px,1.2vw,13px); font-weight: 700; letter-spacing: 0.15em; color: rgba(var(--ar),var(--ag),var(--ab),0.5); text-align: center; flex: 1; }
   #hudReserved { min-width: 80px; text-align: right; font-size: clamp(8px,1vw,11px); color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
   #speedFlash {
-    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
     font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.5vw,14px); font-weight: 700;
-    color: #ff2d78; text-shadow: 0 0 10px #ff2d78; letter-spacing: 0.15em;
+    color: var(--accent); text-shadow: 0 0 10px var(--accent); letter-spacing: 0.15em;
     opacity: 0; pointer-events: none; z-index: 6; text-transform: uppercase;
   }
   #multiplierDisplay {
-    position: absolute; top: 56px; right: 16px;
+    position: absolute; top: 68px; right: 16px;
     font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.5vw,14px);
-    color: #ff2d78; text-shadow: 0 0 10px #ff2d78; letter-spacing: 0.1em; pointer-events: none; z-index: 6;
+    color: var(--accent); text-shadow: 0 0 10px var(--accent); letter-spacing: 0.1em; pointer-events: none; z-index: 6;
   }
 
   #touchControls {
-    position: absolute; bottom: 40px; left: 0; width: 100%; height: 140px; z-index: 8; pointer-events: none; display: none;
+    position: absolute; bottom: 40px; left: 0; width: 100%; height: 165px; z-index: 8; pointer-events: none; display: none;
   }
   #touchControls.active { display: block; }
   .touch-btn {
-    position: absolute; background: rgba(255,45,120,0.1); border: 2px solid rgba(255,45,120,0.4);
+    position: absolute; background: rgba(var(--ar),var(--ag),var(--ab),0.1); border: 2px solid rgba(var(--ar),var(--ag),var(--ab),0.4);
     color: rgba(255,255,255,0.7); font-family: 'Share Tech Mono', monospace; font-size: 13px;
     display: flex; align-items: center; justify-content: center; border-radius: 4px;
     pointer-events: all; touch-action: manipulation; transition: background 0.05s;
     text-transform: uppercase; letter-spacing: 0.1em; -webkit-tap-highlight-color: transparent;
   }
-  .touch-btn:active, .touch-btn.pressed { background: rgba(255,45,120,0.35); border-color: #ff2d78; color: #fff; box-shadow: 0 0 16px rgba(255,45,120,0.5); }
+  .touch-btn:active, .touch-btn.pressed { background: rgba(var(--ar),var(--ag),var(--ab),0.35); border-color: var(--accent); color: #fff; box-shadow: 0 0 16px rgba(var(--ar),var(--ag),var(--ab),0.5); }
   #tbJump  { right: 16px; bottom: 74px; width: 80px; height: 70px; font-size: 14px; }
   #tbDuck  { right: 16px; bottom: 0;    width: 80px; height: 60px; }
-  #tbDash  { left: 16px;  bottom: 30px; width: 80px; height: 60px; }
-  #tbTrick { left: 50%; transform: translateX(-50%); bottom: 8px; width: 90px; height: 50px; opacity: 0.4; }
-  #tbTrick.trick-active { opacity: 1; border-color: #ff2d78; animation: trickBtnPulse 0.5s ease infinite alternate; }
-  @keyframes trickBtnPulse { 0% { box-shadow: 0 0 8px rgba(255,45,120,0.5); } 100% { box-shadow: 0 0 24px #ff2d78; } }
+  #tbFwd   { left: 16px;  bottom: 56px; width: 80px; height: 50px; }
+  #tbBwd   { left: 16px;  bottom: 0;    width: 80px; height: 50px; }
+  #tbTrick {
+    left: 16px; bottom: 114px; width: 80px; height: 40px;
+    background: transparent !important; border: none !important; box-shadow: none !important;
+    color: rgba(255,255,255,0.3); font-size: 12px;
+  }
+  #tbTrick.trick-active {
+    color: #ff2d78;
+    text-shadow: 0 0 10px #ff2d78, 0 0 20px #ff2d78, 0 0 40px #ff2d78;
+    background: transparent !important; border: none !important;
+  }
 
   #gameOverScreen { text-align: center; padding: 20px; }
-  #gameOverTitle { font-family: 'Orbitron', sans-serif; font-size: clamp(28px,5vw,60px); font-weight: 900; color: #ff2d78; text-shadow: 0 0 20px #ff2d78; letter-spacing: 0.1em; margin-bottom: 8px; }
+  #gameOverTitle { font-family: 'Orbitron', sans-serif; font-size: clamp(28px,5vw,60px); font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent); letter-spacing: 0.1em; margin-bottom: 8px; }
   #deathMessage { font-size: clamp(12px,2vw,20px); color: rgba(255,255,255,0.7); letter-spacing: 0.15em; margin-bottom: 16px; text-transform: uppercase; }
-  #finalScore { font-family: 'Orbitron', sans-serif; font-size: clamp(22px,4vw,50px); font-weight: 700; color: #fff; text-shadow: 0 0 16px #ff2d78; margin-bottom: 8px; }
+  #finalScore { font-family: 'Orbitron', sans-serif; font-size: clamp(22px,4vw,50px); font-weight: 700; color: #fff; text-shadow: 0 0 16px var(--accent); margin-bottom: 8px; }
   #tierMessage { font-size: clamp(10px,1.6vw,16px); color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto 20px; line-height: 1.4; padding: 0 20px; }
   #nameEntryArea { margin-bottom: 20px; }
   #nameEntryArea label { font-size: clamp(10px,1.4vw,14px); color: rgba(255,255,255,0.7); letter-spacing: 0.1em; display: block; margin-bottom: 8px; text-transform: uppercase; }
-  #nameInput { background: #000; border: 2px solid rgba(255,45,120,0.6); color: #fff; font-family: 'Orbitron', sans-serif; font-size: clamp(14px,2vw,20px); padding: 8px 16px; text-align: center; letter-spacing: 0.15em; outline: none; width: 200px; text-transform: uppercase; }
-  #nameInput:focus { border-color: #ff2d78; box-shadow: 0 0 16px rgba(255,45,120,0.4); }
+  #nameInput { background: #000; border: 2px solid rgba(var(--ar),var(--ag),var(--ab),0.6); color: #fff; font-family: 'Orbitron', sans-serif; font-size: clamp(14px,2vw,20px); padding: 8px 16px; text-align: center; letter-spacing: 0.15em; outline: none; width: 200px; text-transform: uppercase; }
+  #nameInput:focus { border-color: var(--accent); box-shadow: 0 0 16px rgba(var(--ar),var(--ag),var(--ab),0.4); }
   #submitNameBtn { display: block; margin: 8px auto 0; }
 
   #leaderboardScreen { padding: 20px; overflow: hidden; }
-  #lbTitle { font-family: 'Orbitron', sans-serif; font-size: clamp(18px,3vw,36px); font-weight: 900; color: #ff2d78; text-shadow: 0 0 16px #ff2d78; letter-spacing: 0.15em; margin-bottom: 16px; text-transform: uppercase; }
+  #lbTitle { font-family: 'Orbitron', sans-serif; font-size: clamp(18px,3vw,36px); font-weight: 900; color: var(--accent); text-shadow: 0 0 16px var(--accent); letter-spacing: 0.15em; margin-bottom: 16px; text-transform: uppercase; }
   #lbTable { width: 100%; max-width: 700px; border-collapse: collapse; font-size: clamp(10px,1.4vw,14px); }
-  #lbTable th { padding: 8px 12px; text-align: left; border-bottom: 2px solid rgba(255,45,120,0.4); color: rgba(255,255,255,0.5); letter-spacing: 0.1em; font-weight: 400; text-transform: uppercase; }
+  #lbTable th { padding: 8px 12px; text-align: left; border-bottom: 2px solid rgba(var(--ar),var(--ag),var(--ab),0.4); color: rgba(255,255,255,0.5); letter-spacing: 0.1em; font-weight: 400; text-transform: uppercase; }
   #lbTable td { padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
-  .lbRow-1 td { color: #ff2d78; text-shadow: 0 0 10px #ff2d78; font-size: 1.1em; }
-  .lbScrollWrap { width: 100%; max-width: 700px; max-height: calc(100vh - 180px); overflow-y: auto; border: 1px solid rgba(255,45,120,0.3); scrollbar-width: thin; scrollbar-color: rgba(255,45,120,0.4) transparent; }
+  .lbRow-1 td { color: var(--accent); text-shadow: 0 0 10px var(--accent); font-size: 1.1em; }
+  .lbScrollWrap { width: 100%; max-width: 700px; max-height: calc(100vh - 180px); overflow-y: auto; border: 1px solid rgba(var(--ar),var(--ag),var(--ab),0.3); scrollbar-width: thin; scrollbar-color: rgba(var(--ar),var(--ag),var(--ab),0.4) transparent; }
   #lbStatus { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 8px; letter-spacing: 0.05em; }
 
-  #whiteFlash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ff2d78; opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.05s; }
+  #whiteFlash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent); opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.05s; }
   #invertOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; mix-blend-mode: difference; background: #fff; opacity: 0; pointer-events: none; z-index: 99; transition: opacity 0.1s; }
-  #nearMissDisplay { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: clamp(14px,2.5vw,26px); font-weight: 700; color: #ff2d78; text-shadow: 0 0 16px #ff2d78; letter-spacing: 0.15em; opacity: 0; pointer-events: none; z-index: 6; }
+  #nearMissDisplay { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: clamp(14px,2.5vw,26px); font-weight: 700; color: var(--accent); text-shadow: 0 0 16px var(--accent); letter-spacing: 0.15em; opacity: 0; pointer-events: none; z-index: 6; }
 
-  /* ── Portrait / rotate overlay ── */
+  /* Portrait / rotate overlay */
   #portraitOverlay {
     display: none;
     position: fixed; top:0; left:0; width:100%; height:100%;
@@ -202,11 +222,12 @@
   #portraitSub   { font-size:clamp(11px,3vw,14px); color:rgba(255,255,255,0.5); letter-spacing:0.08em; line-height:1.6; margin-bottom:32px; }
   /* Touch controls bigger / repositioned in portrait */
   @media (orientation: portrait) {
-    #tbJump  { right:20px; bottom:100px; width:100px; height:90px; font-size:16px; }
+    #tbJump  { right:20px; bottom:105px; width:100px; height:90px; font-size:16px; }
     #tbDuck  { right:20px; bottom:0;     width:100px; height:80px; }
-    #tbDash  { left:20px;  bottom:50px;  width:100px; height:80px; }
-    #tbTrick { left:50%; transform:translateX(-50%); bottom:12px; width:110px; height:65px; }
-    #touchControls { height: 200px; }
+    #tbFwd   { left:20px;  bottom:70px;  width:100px; height:65px; }
+    #tbBwd   { left:20px;  bottom:0;     width:100px; height:65px; }
+    #tbTrick { left:20px;  bottom:143px; width:100px; height:50px; }
+    #touchControls { height: 210px; }
     /* Larger HUD text on narrow screens */
     #scoreDisplay { font-size: clamp(16px,5vw,28px); }
   }
@@ -222,7 +243,7 @@
       <div id="tagline">Lean back. Go fast. Don't die.</div>
       <div id="controlsHint">
         SPACE / ↑ &nbsp;JUMP &nbsp;|&nbsp; ↓ &nbsp;DUCK &nbsp;|&nbsp; SHIFT &nbsp;DASH &nbsp;|&nbsp; T &nbsp;TRICK<br>
-        JUMP AGAIN IN MID-AIR FOR <span>DOUBLE JUMP</span><br>
+        ← / → &nbsp;MOVE CHAIR &nbsp;|&nbsp; JUMP AGAIN IN MID-AIR FOR <span>DOUBLE JUMP</span><br>
         DODGE THE <span>PINK OBSTACLES</span>
       </div>
       <div class="btn-row">
@@ -236,26 +257,32 @@
     <canvas id="gameCanvas"></canvas>
     <div id="hud">
       <div id="hudTop">
-        <div id="scoreDisplay">0</div>
+        <div id="hudTopLeft">
+          <div id="scoreDisplay">0</div>
+          <div id="spdDisplay">SPD: 0 km/h</div>
+        </div>
         <div id="trickCallout"></div>
-        <div id="skillTokens">
-          <div class="token-square" id="tok0"></div>
-          <div class="token-square" id="tok1"></div>
-          <div class="token-square" id="tok2"></div>
+        <div id="hudTopRight">
+          <div id="levelDisplay">LVL 1 / 67</div>
+          <div id="skillTokens">
+            <div class="token-square" id="tok0"></div>
+            <div class="token-square" id="tok1"></div>
+            <div class="token-square" id="tok2"></div>
+          </div>
         </div>
       </div>
       <div id="hudBottom">
-        <div id="spdDisplay">SPD: 0 km/h</div>
         <div id="brandingDisplay">HORIZONTAL OFFICE CHAIR</div>
-        <div id="hudReserved">HOC v1.1</div>
+        <div id="hudReserved">HOC v1.2</div>
       </div>
     </div>
     <div id="speedFlash"></div>
     <div id="multiplierDisplay"></div>
     <div id="nearMissDisplay"></div>
     <div id="touchControls">
-      <div class="touch-btn" id="tbDash">DASH</div>
       <div class="touch-btn" id="tbTrick">TRICK</div>
+      <div class="touch-btn" id="tbFwd">FWD</div>
+      <div class="touch-btn" id="tbBwd">BWD</div>
       <div class="touch-btn" id="tbJump">JUMP</div>
       <div class="touch-btn" id="tbDuck">DUCK</div>
     </div>
@@ -312,6 +339,35 @@
 const JSONBIN_API_KEY = "$2a$10$YOUR_KEY_HERE";
 const JSONBIN_BIN_ID  = "YOUR_BIN_ID_HERE";
 
+// ==================== ACCENT COLOR SYSTEM ====================
+let ACCENT = '#ff2d78';
+let ACCENT_R = 255, ACCENT_G = 45, ACCENT_B = 120;
+
+function ac(a) { return `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${a})`; }
+
+function applyAccent(hex) {
+  ACCENT = hex;
+  // Parse RGB using a 1px canvas
+  try {
+    const c = document.createElement('canvas'); c.width = 1; c.height = 1;
+    const cx = c.getContext('2d'); cx.fillStyle = hex; cx.fillRect(0,0,1,1);
+    const d = cx.getImageData(0,0,1,1).data;
+    ACCENT_R = d[0]; ACCENT_G = d[1]; ACCENT_B = d[2];
+  } catch(e) {}
+  document.documentElement.style.setProperty('--accent', hex);
+  document.documentElement.style.setProperty('--ar', ACCENT_R);
+  document.documentElement.style.setProperty('--ag', ACCENT_G);
+  document.documentElement.style.setProperty('--ab', ACCENT_B);
+}
+
+// ==================== LEVEL SYSTEM ====================
+let currentLevel = 1;
+let gameWon = false;
+
+function getLevelColor(lvl) {
+  return `hsl(${Math.round((338 + (lvl-1)*(360/67)) % 360)}, 100%, 55%)`;
+}
+
 // ==================== STATE ====================
 let gameState = 'title';
 let score = 0;
@@ -320,7 +376,7 @@ let gameTime = 0;
 let speed = 200;
 const BASE_SPEED = 200;
 const MAX_SPEED = 800;
-let lastSpeedIncrease = 0;
+let lastSpeedTick = 0;
 let multiplier = 1;
 let multiplierTimer = 0;
 let tokens = 0;
@@ -370,6 +426,7 @@ function sfxNearMiss() { playTone('sine', 1200, 1400, 0.05, 0.2); }
 function sfxTrick() { [220,330,440,550,660].forEach((f,i) => playTone('sine', f, f*1.2, 0.08, 0.25, i*0.07)); }
 function sfxDash()  { playTone('square', 400, 800, 0.1, 0.15); }
 function sfxToken() { playTone('sine', 880, 1100, 0.12, 0.2); }
+function sfxLevelUp() { [440,554,659,880].forEach((f,i) => playTone('sine', f, f*1.05, 0.1, 0.2, i*0.08)); }
 
 function startBgAudio() {
   try {
@@ -426,13 +483,16 @@ const PLAYER = {
   floatTimer: 0, floating: false, floatY: 0,
   executiveTimer: 0, executiveActive: false,
   invincible: false, invincibleTimer: 0, nearMissChecked: {},
+  hdir: 0, hspeed: 150, defaultX: 0,
 };
 
 // Physics constant: time player is airborne on a full single jump
 const JUMP_AIR_TIME = (2 * 620) / 1200; // ~1.033 seconds
 
 function resetPlayer() {
-  PLAYER.x = W * 0.18; PLAYER.y = FLOOR_Y - PLAYER.h; PLAYER.vy = 0;
+  PLAYER.defaultX = W * 0.18;
+  PLAYER.x = PLAYER.defaultX;
+  PLAYER.y = FLOOR_Y - PLAYER.h; PLAYER.vy = 0;
   PLAYER.onGround = true; PLAYER.jumps = 0;
   PLAYER.ducking = false; PLAYER.dashing = false;
   PLAYER.dashTimer = 0; PLAYER.dashCooldown = 0;
@@ -441,6 +501,7 @@ function resetPlayer() {
   PLAYER.floatTimer = 0; PLAYER.floating = false; PLAYER.deadAnim = 0;
   PLAYER.invincible = false; PLAYER.invincibleTimer = 0;
   PLAYER.executiveActive = false; PLAYER.nearMissChecked = {};
+  PLAYER.hdir = 0;
 }
 
 // ==================== OBSTACLES ====================
@@ -584,52 +645,52 @@ function updateBgLayers(dt) {
 }
 
 function drawBgLayers() {
-  ctx2d.strokeStyle = 'rgba(255,45,120,0.2)';
+  ctx2d.strokeStyle = ac(0.2);
   ctx2d.lineWidth = 2;
   ctx2d.beginPath(); ctx2d.moveTo(0, FLOOR_Y); ctx2d.lineTo(W, FLOOR_Y); ctx2d.stroke();
-  ctx2d.strokeStyle = 'rgba(255,45,120,0.05)';
+  ctx2d.strokeStyle = ac(0.05);
   ctx2d.lineWidth = 1;
-  ctx2d.beginPath(); ctx2d.moveTo(0, 52); ctx2d.lineTo(W, 52); ctx2d.stroke();
+  ctx2d.beginPath(); ctx2d.moveTo(0, 64); ctx2d.lineTo(W, 64); ctx2d.stroke();
 
   for (let l = 0; l < bgLayers.length; l++) {
     for (const el of bgLayers[l].elements) {
       if (el.type === 'window') {
-        ctx2d.strokeStyle = 'rgba(255,45,120,0.06)'; ctx2d.lineWidth = 1;
+        ctx2d.strokeStyle = ac(0.06); ctx2d.lineWidth = 1;
         ctx2d.strokeRect(el.x, el.y, el.w, el.h);
         ctx2d.beginPath();
         ctx2d.moveTo(el.x+el.w/2, el.y); ctx2d.lineTo(el.x+el.w/2, el.y+el.h);
         ctx2d.moveTo(el.x, el.y+el.h/2); ctx2d.lineTo(el.x+el.w, el.y+el.h/2);
         ctx2d.stroke();
       } else if (el.type === 'panel') {
-        ctx2d.fillStyle = 'rgba(255,45,120,0.02)'; ctx2d.fillRect(el.x, el.y, el.w, el.h);
+        ctx2d.fillStyle = ac(0.02); ctx2d.fillRect(el.x, el.y, el.w, el.h);
       } else if (el.type === 'desk') {
-        ctx2d.strokeStyle = 'rgba(255,45,120,0.1)'; ctx2d.lineWidth = 2;
+        ctx2d.strokeStyle = ac(0.1); ctx2d.lineWidth = 2;
         ctx2d.strokeRect(el.x, el.y, el.w, el.h);
         ctx2d.strokeRect(el.x+10, el.y-28, 24, 20);
         ctx2d.beginPath(); ctx2d.moveTo(el.x+20, el.y-8); ctx2d.lineTo(el.x+22, el.y); ctx2d.stroke();
       } else if (el.type === 'cubicle') {
-        ctx2d.strokeStyle = 'rgba(255,45,120,0.07)'; ctx2d.lineWidth = 2;
+        ctx2d.strokeStyle = ac(0.07); ctx2d.lineWidth = 2;
         ctx2d.strokeRect(el.x, el.y, el.w, el.h);
       } else if (el.type === 'tile') {
-        ctx2d.fillStyle = 'rgba(255,45,120,0.07)'; ctx2d.fillRect(el.x, el.y, el.w, el.h);
+        ctx2d.fillStyle = ac(0.07); ctx2d.fillRect(el.x, el.y, el.w, el.h);
       }
     }
   }
 }
 
-// ==================== OBSTACLES DRAWING (HOT PINK) ====================
+// ==================== OBSTACLES DRAWING ====================
 function drawObstacleShape(ctx, type, x, y, w, h) {
-  ctx.strokeStyle = '#ff2d78';
+  ctx.strokeStyle = ACCENT;
   ctx.fillStyle   = '#1a0026';
   ctx.lineWidth   = 2;
-  ctx.shadowColor = '#ff2d78';
+  ctx.shadowColor = ACCENT;
   ctx.shadowBlur  = 10;
 
   switch(type.shape) {
     case 'stapler':
-      ctx.fillStyle = '#ff2d78';
+      ctx.fillStyle = ACCENT;
       ctx.beginPath(); ctx.rect(x, y+h*0.4, w, h*0.4); ctx.fill();
-      ctx.fillStyle = 'rgba(255,45,120,0.6)';
+      ctx.fillStyle = ac(0.6);
       ctx.beginPath(); ctx.rect(x, y, w, h*0.35); ctx.fill();
       ctx.strokeRect(x, y, w, h);
       break;
@@ -648,13 +709,13 @@ function drawObstacleShape(ctx, type, x, y, w, h) {
 
     case 'monitor':
       ctx.strokeRect(x, y, w, h*0.75);
-      ctx.fillStyle = 'rgba(255,45,120,0.08)'; ctx.fillRect(x, y, w, h*0.75);
+      ctx.fillStyle = ac(0.08); ctx.fillRect(x, y, w, h*0.75);
       ctx.beginPath();
       ctx.moveTo(x+w/2-8, y+h*0.75); ctx.lineTo(x+w/2, y+h*0.88); ctx.lineTo(x+w/2+8, y+h*0.75); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x+w/2-14, y+h*0.88); ctx.lineTo(x+w/2+14, y+h*0.88); ctx.stroke();
-      ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,45,120,0.4)';
+      ctx.lineWidth = 1; ctx.strokeStyle = ac(0.4);
       for (let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(x+6, y+6+i*(h*0.75-12)/4); ctx.lineTo(x+w-6, y+6+i*(h*0.75-12)/4); ctx.stroke(); }
-      ctx.lineWidth = 2; ctx.strokeStyle = '#ff2d78';
+      ctx.lineWidth = 2; ctx.strokeStyle = ACCENT;
       break;
 
     case 'chair':
@@ -683,19 +744,19 @@ function drawObstacleShape(ctx, type, x, y, w, h) {
     case 'mug':
       ctx.beginPath(); ctx.moveTo(x+4,y); ctx.lineTo(x+w-4,y); ctx.lineTo(x+w,y+h); ctx.lineTo(x,y+h); ctx.closePath(); ctx.stroke();
       ctx.beginPath(); ctx.arc(x+w+4, y+h*0.4, h*0.25, -Math.PI/2, Math.PI/2); ctx.stroke();
-      ctx.lineWidth=1; ctx.strokeStyle='rgba(255,45,120,0.4)';
+      ctx.lineWidth=1; ctx.strokeStyle=ac(0.4);
       ctx.beginPath();
       ctx.moveTo(x+w*0.35,y-4); ctx.quadraticCurveTo(x+w*0.25,y-10,x+w*0.35,y-16);
       ctx.moveTo(x+w*0.6,y-4);  ctx.quadraticCurveTo(x+w*0.7,y-10,x+w*0.6,y-16);
-      ctx.stroke(); ctx.lineWidth=2; ctx.strokeStyle='#ff2d78';
+      ctx.stroke(); ctx.lineWidth=2; ctx.strokeStyle=ACCENT;
       break;
 
     case 'papers':
       for (let i=2; i>=0; i--) {
-        ctx.strokeStyle = i===0 ? '#ff2d78' : 'rgba(255,45,120,0.4)';
+        ctx.strokeStyle = i===0 ? ACCENT : ac(0.4);
         ctx.strokeRect(x+i*2, y+i*3, w-i*2, h-i*2);
       }
-      ctx.strokeStyle='#ff2d78'; ctx.lineWidth=1;
+      ctx.strokeStyle=ACCENT; ctx.lineWidth=1;
       for (let i=1; i<4; i++) { ctx.beginPath(); ctx.moveTo(x+6, y+6+i*4); ctx.lineTo(x+w-6, y+6+i*4); ctx.stroke(); }
       ctx.lineWidth=2;
       break;
@@ -711,7 +772,7 @@ function drawObstacleShape(ctx, type, x, y, w, h) {
     case 'printer':
       ctx.strokeRect(x, y+h*0.3, w, h*0.7);
       ctx.strokeRect(x+6, y, w-12, h*0.35);
-      ctx.fillStyle='rgba(255,45,120,0.2)'; ctx.fillRect(x+12, y+4, w-24, h*0.2);
+      ctx.fillStyle=ac(0.2); ctx.fillRect(x+12, y+4, w-24, h*0.2);
       ctx.strokeRect(x+12, y+4, w-24, h*0.2);
       ctx.lineWidth=1;
       ctx.beginPath(); ctx.arc(x+w-14, y+h*0.6, 4, 0, Math.PI*2); ctx.arc(x+w-26, y+h*0.6, 4, 0, Math.PI*2); ctx.stroke();
@@ -723,7 +784,7 @@ function drawObstacleShape(ctx, type, x, y, w, h) {
       ctx.moveTo(x+w*0.25,y); ctx.lineTo(x+w*0.75,y); ctx.lineTo(x+w*0.85,y+h*0.5);
       ctx.lineTo(x+w*0.85,y+h*0.7); ctx.lineTo(x+w*0.15,y+h*0.7); ctx.lineTo(x+w*0.15,y+h*0.5);
       ctx.closePath(); ctx.stroke();
-      ctx.fillStyle='rgba(255,45,120,0.08)'; ctx.fill();
+      ctx.fillStyle=ac(0.08); ctx.fill();
       ctx.strokeRect(x+4, y+h*0.68, w-8, h*0.32);
       ctx.beginPath(); ctx.moveTo(x+w*0.35,y+h*0.82); ctx.lineTo(x+w*0.35,y+h*0.9); ctx.lineTo(x+w*0.45,y+h*0.9); ctx.stroke();
       break;
@@ -776,7 +837,7 @@ function drawPlayer() {
 // ==================== DRAW WORKER ====================
 function drawWorker(wd) {
   ctx2d.save();
-  ctx2d.strokeStyle='rgba(255,45,120,0.7)'; ctx2d.fillStyle='rgba(255,45,120,0.7)';
+  ctx2d.strokeStyle=ac(0.7); ctx2d.fillStyle=ac(0.7);
   ctx2d.lineWidth=2; ctx2d.lineCap='round';
   const wx=wd.x+20, wy=wd.y;
   ctx2d.beginPath(); ctx2d.arc(wx,wy,7,0,Math.PI*2); ctx2d.stroke();
@@ -802,7 +863,7 @@ function updateDebris(dt) {
 }
 function drawDebris() {
   for (const d of debris) {
-    ctx2d.fillStyle=`rgba(255,45,120,${d.life/d.maxLife})`;
+    ctx2d.fillStyle=ac(d.life/d.maxLife);
     ctx2d.fillRect(d.x-d.size/2, d.y-d.size/2, d.size, d.size);
   }
 }
@@ -874,6 +935,7 @@ function showNearMiss() {
 function updateHUD() {
   document.getElementById('scoreDisplay').textContent=Math.floor(score).toLocaleString();
   document.getElementById('spdDisplay').textContent=`SPD: ${Math.round(speed*0.036*10)/10} km/h`;
+  document.getElementById('levelDisplay').textContent=`LVL ${currentLevel} / 67`;
   const multEl=document.getElementById('multiplierDisplay');
   if (multiplier>1) { multEl.textContent=`${multiplier}x MULTIPLIER`; if(trickBonusActive) multEl.textContent+=` [${Math.ceil(trickBonusTimer)}s]`; else if(multiplierTimer>0) multEl.textContent+=` [${Math.ceil(multiplierTimer)}s]`; }
   else multEl.textContent='';
@@ -934,9 +996,25 @@ function triggerDeath() {
   },800);
 }
 
+function triggerEndGame() {
+  if (isDead) return;
+  isDead=true; stopBgAudio(); sfxTrick();
+  const wf=document.getElementById('whiteFlash');
+  wf.style.opacity='1';
+  setTimeout(()=>{wf.style.opacity='0';},300);
+  gameWon=true;
+  setTimeout(showGameOver, 600);
+}
+
 function showGameOver() {
   if (score>hiScore) { hiScore=Math.floor(score); localStorage.setItem('hoc_hi',hiScore); }
-  document.getElementById('deathMessage').textContent=DEATH_MESSAGES[Math.floor(Math.random()*DEATH_MESSAGES.length)];
+  if (gameWon) {
+    document.getElementById('gameOverTitle').textContent='YOU WIN!';
+    document.getElementById('deathMessage').textContent='ALL 67 LEVELS CLEARED. THE OFFICE IS YOURS.';
+  } else {
+    document.getElementById('gameOverTitle').textContent='GAME OVER';
+    document.getElementById('deathMessage').textContent=DEATH_MESSAGES[Math.floor(Math.random()*DEATH_MESSAGES.length)];
+  }
   document.getElementById('finalScore').textContent=`SCORE: ${Math.floor(score).toLocaleString()}`;
   document.getElementById('tierMessage').textContent=getTierMessage(Math.floor(score));
   document.getElementById('nameInput').value='';
@@ -949,7 +1027,7 @@ function showGameOver() {
 function initGame() {
   resizeCanvas(); resetPlayer();
   obstacles=[]; workerDrops=[]; debris=[];
-  score=0; gameTime=0; speed=BASE_SPEED; lastSpeedIncrease=0;
+  score=0; gameTime=0; speed=BASE_SPEED; lastSpeedTick=0;
   multiplier=1; multiplierTimer=0; tokens=0;
   trickBonusActive=false; trickBonusTimer=0;
   trickWindowOpen=false; trickWindowDuration=0; lastTrickWindow=0;
@@ -957,8 +1035,10 @@ function initGame() {
   waveActive=false; waveTimer=0; waveCount=0; nextWave=300; waveCooldown=0;
   obstacleSpawnTimer=0; nextObstacleInterval=4.0; // start with a long gap
   isDead=false; deathFreezeActive=false; shakeTimer=0;
+  currentLevel=1; gameWon=false;
   // FIX: cancel any pending death flash from previous game
   if (deathFlashTimeout) { clearTimeout(deathFlashTimeout); deathFlashTimeout=null; }
+  applyAccent(getLevelColor(1));
   initBgLayers(); updateTokenUI(); clearCallout();
   document.getElementById('speedFlash').style.opacity='0';
   document.getElementById('multiplierDisplay').textContent='';
@@ -983,7 +1063,7 @@ function gameLoop(timestamp) {
     render();
     if (deathFreezeTimer<=0) {
       deathFreezeActive=false;
-      setTimeout(showGameOver, 400);
+      if (!gameWon) setTimeout(showGameOver, 400);
       animId=null;
       return;
     }
@@ -1001,9 +1081,20 @@ function gameLoop(timestamp) {
 
 function update(dt) {
   gameTime+=dt;
-  speed=Math.min(BASE_SPEED+Math.floor(gameTime/5)*5, MAX_SPEED);
-  const speedTick=Math.floor(gameTime/5);
-  if (speedTick>Math.floor(lastSpeedIncrease/5) && speed<MAX_SPEED) { showSpeedFlash('SPEED INCREASE.'); lastSpeedIncrease=gameTime; }
+  speed = Math.min(BASE_SPEED + Math.floor(gameTime/20) * 15, MAX_SPEED);
+  const speedTick = Math.floor(gameTime/20);
+  if (speedTick > lastSpeedTick && speed < MAX_SPEED) { showSpeedFlash('SPEED UP!'); lastSpeedTick = speedTick; }
+
+  // Level system
+  const newLevel = Math.min(67, Math.floor(gameTime/60)+1);
+  if (newLevel !== currentLevel) {
+    currentLevel = newLevel;
+    applyAccent(getLevelColor(newLevel));
+    showSpeedFlash(`LEVEL ${newLevel}!`);
+    sfxLevelUp();
+    if (newLevel >= 67) { triggerEndGame(); return; }
+  }
+
   score+=(1/0.1)*dt*(speed/BASE_SPEED)*multiplier;
   if (multiplierTimer>0) { multiplierTimer-=dt; if(multiplierTimer<=0){multiplierTimer=0; if(!trickBonusActive)multiplier=1;} }
   if (trickBonusActive) { trickBonusTimer-=dt; if(trickBonusTimer<=0){trickBonusActive=false;trickBonusTimer=0;multiplier=1;} }
@@ -1057,7 +1148,15 @@ function updatePlayer(dt) {
   const floorY=FLOOR_Y-(p.ducking?p.h*0.5:p.h);
   if (p.y>=floorY) { if(p.vy>0&&!p.onGround)sfxLand(); p.y=floorY; p.vy=0; p.onGround=true; p.jumps=0; p.jumpHoldTimer=0; p.floating=false; p.executiveActive=false; }
   else p.onGround=false;
-  if (p.y<56) { p.y=56; p.vy=0; }
+  if (p.y<64) { p.y=64; p.vy=0; }
+
+  // Horizontal movement
+  if (p.hdir !== 0) {
+    p.x += p.hdir * p.hspeed * dt;
+    p.x = Math.max(W*0.04, Math.min(W*0.38, p.x));
+  } else {
+    p.x += (p.defaultX - p.x) * Math.min(1, 6*dt);
+  }
 }
 
 function render() {
@@ -1084,13 +1183,17 @@ window.addEventListener('keydown', e=>{
   switch(e.code) {
     case 'Space': case 'KeyW': case 'ArrowUp': e.preventDefault(); doJump(); break;
     case 'KeyS': case 'ArrowDown': e.preventDefault(); PLAYER.ducking=true; break;
-    case 'ShiftLeft': case 'ShiftRight': case 'KeyD': doDash(); break;
+    case 'ShiftLeft': case 'ShiftRight': doDash(); break;
     case 'KeyT': doTrick(); break;
+    case 'ArrowLeft': case 'KeyA': PLAYER.hdir=-1; break;
+    case 'ArrowRight': case 'KeyD': PLAYER.hdir=1; break;
   }
 });
 window.addEventListener('keyup', e=>{
   if (e.code==='Space'||e.code==='KeyW'||e.code==='ArrowUp') PLAYER.jumpHeld=false;
   if (e.code==='KeyS'||e.code==='ArrowDown') PLAYER.ducking=false;
+  if (e.code==='ArrowLeft'||e.code==='KeyA') { if(PLAYER.hdir===-1) PLAYER.hdir=0; }
+  if (e.code==='ArrowRight'||e.code==='KeyD') { if(PLAYER.hdir===1) PLAYER.hdir=0; }
 });
 
 function doJump() {
@@ -1115,7 +1218,8 @@ function setupTouchControls() {
   }
   addTouch(document.getElementById('tbJump'),  ()=>{if(gameState==='game')doJump();}, ()=>{PLAYER.jumpHeld=false;});
   addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game')PLAYER.ducking=true;}, ()=>{PLAYER.ducking=false;});
-  addTouch(document.getElementById('tbDash'),  ()=>{if(gameState==='game')doDash();}, null);
+  addTouch(document.getElementById('tbFwd'),   ()=>{if(gameState==='game')PLAYER.hdir=1;}, ()=>{if(PLAYER.hdir===1)PLAYER.hdir=0;});
+  addTouch(document.getElementById('tbBwd'),   ()=>{if(gameState==='game')PLAYER.hdir=-1;}, ()=>{if(PLAYER.hdir===-1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbTrick'), ()=>{if(gameState==='game')doTrick();}, null);
 }
 
@@ -1193,7 +1297,7 @@ window.addEventListener('resize',()=>{if(gameState==='game'){resizeCanvas();FLOO
 setInterval(()=>{
   if (gameState!=='game') return;
   const el=document.getElementById('scoreDisplay');
-  el.style.textShadow='3px 0 #ff2d78, -3px 0 rgba(255,45,120,0.4), 0 0 20px #ff2d78';
+  el.style.textShadow=`3px 0 ${ACCENT}, -3px 0 ${ac(0.4)}, 0 0 20px ${ACCENT}`;
   setTimeout(()=>{el.style.textShadow='';},80);
 },4000);
 
