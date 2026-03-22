@@ -140,7 +140,6 @@
   .token-square.filled { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
   .token-square.pulse { animation: tokenPulse 0.6s ease infinite alternate; }
   @keyframes tokenPulse { 0% { box-shadow: 0 0 8px var(--accent); } 100% { box-shadow: 0 0 24px var(--accent); transform: scale(1.15); } }
-  #brandingDisplay { font-family: 'Orbitron', sans-serif; font-size: clamp(8px,1.2vw,13px); font-weight: 700; letter-spacing: 0.15em; color: rgba(var(--ar),var(--ag),var(--ab),0.5); text-align: center; flex: 1; }
   #hudReserved { min-width: 80px; text-align: right; font-size: clamp(8px,1vw,11px); color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
   #speedFlash {
     position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
@@ -306,7 +305,6 @@
         </div>
       </div>
       <div id="hudBottom">
-        <div id="brandingDisplay">HORIZONTAL OFFICE CHAIR</div>
         <div id="hudReserved">HOC v1.2</div>
       </div>
     </div>
@@ -1515,7 +1513,6 @@ function runCountdown() {
   function next() {
     if (i >= steps.length) {
       overlay.style.display = 'none';
-      countingDown = false;
       return;
     }
     const s = steps[i++];
@@ -1528,6 +1525,8 @@ function runCountdown() {
       playTone('sine', s.tone[0], s.tone[1], s.tone[2], 0.35);
       if (s.text === 'ROLL!') playTone('square', 330, 660, 0.2, 0.25, 0.06);
     }
+    // Release the game the instant ROLL! appears
+    if (s.text === 'ROLL!') countingDown = false;
     setTimeout(next, s.dur);
   }
   next();
