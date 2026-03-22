@@ -442,6 +442,8 @@ let leaderboardData = [];
 // ==================== DUCK CHARGES ====================
 let duckCharges = 3;
 const MAX_DUCK_CHARGES = 8;
+const DUCK_DURATION = 1.5; // seconds each charge lasts
+let duckTimer = 0;
 let duckPassiveTimer = 0;
 let countingDown = false;
 
@@ -1190,7 +1192,9 @@ function showWaveWarning() { const el=document.getElementById('speedFlash'); el.
 function hideWaveWarning() { document.getElementById('speedFlash').style.opacity='0'; }
 let nearMissTimeout=null;
 function showNearMiss() {
-  sfxNearMiss(); score+=50*multiplier; addDuckCharges(1); showCallout('NEAR MISS!',false);
+  sfxNearMiss(); score+=50*multiplier;
+  if (!PLAYER.ducking) addDuckCharges(1); // only reward bold near misses, not ducking cheese
+  showCallout('NEAR MISS!',false);
   const el=document.getElementById('nearMissDisplay'); el.textContent='+50 NEAR MISS!'; el.style.opacity='1';
   clearTimeout(nearMissTimeout); nearMissTimeout=setTimeout(()=>{el.style.opacity='0';},800);
 }
@@ -1300,7 +1304,7 @@ function initGame() {
   currentLevel=1; gameWon=false;
   // FIX: cancel any pending death flash from previous game
   if (deathFlashTimeout) { clearTimeout(deathFlashTimeout); deathFlashTimeout=null; }
-  duckCharges=3; duckPassiveTimer=0; countingDown=false;
+  duckCharges=3; duckTimer=0; duckPassiveTimer=0; countingDown=false;
   applyAccent(getLevelColor(1));
   initBgLayers(); updateTokenUI(); updateDuckUI(); clearCallout();
   document.getElementById('speedFlash').style.opacity='0';
@@ -1387,6 +1391,11 @@ function update(dt) {
 
 function updatePlayer(dt) {
   const p=PLAYER;
+  // Duck auto-expire: each charge buys DUCK_DURATION seconds, then releases
+  if (p.ducking) {
+    duckTimer -= dt;
+    if (duckTimer <= 0) { p.ducking = false; duckTimer = 0; }
+  }
   p.bobTimer+=dt;
   if (!p.floating) p.vy+=p.GRAVITY*dt;
   if (p.jumpHeld && p.jumpHoldTimer<p.MAX_JUMP_HOLD && !p.onGround) { p.vy+=p.JUMP_HOLD_FORCE*dt; p.jumpHoldTimer+=dt; }
@@ -1446,7 +1455,7 @@ window.addEventListener('keydown', e=>{
     case 'Space': case 'KeyW': case 'ArrowUp': e.preventDefault(); doJump(); break;
     case 'KeyS': case 'ArrowDown':
       e.preventDefault();
-      if (!PLAYER.ducking && duckCharges > 0) { PLAYER.ducking=true; duckCharges--; updateDuckUI(); }
+      if (!PLAYER.ducking && duckCharges > 0) { PLAYER.ducking=true; duckTimer=DUCK_DURATION; duckCharges--; updateDuckUI(); }
       break;
     case 'ShiftLeft': case 'ShiftRight': doDash(); break;
     case 'KeyT': doTrick(); break;
@@ -1482,7 +1491,7 @@ function setupTouchControls() {
     el.addEventListener('mouseup',    e=>{el.classList.remove('pressed');onUp&&onUp();});
   }
   addTouch(document.getElementById('tbJump'),  ()=>{if(gameState==='game')doJump();}, ()=>{PLAYER.jumpHeld=false;});
-  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
+  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckTimer=DUCK_DURATION;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
   addTouch(document.getElementById('tbFwd'),   ()=>{if(gameState==='game')PLAYER.hdir=1;}, ()=>{if(PLAYER.hdir===1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbBwd'),   ()=>{if(gameState==='game')PLAYER.hdir=-1;}, ()=>{if(PLAYER.hdir===-1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbTrick'), ()=>{if(gameState==='game')doTrick();}, null);
