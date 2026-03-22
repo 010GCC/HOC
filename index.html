@@ -53,12 +53,6 @@
     z-index: 0;
   }
   @keyframes gridScroll { 0% { background-position: 0 0; } 100% { background-position: 0 40px; } }
-  #chairWatermark {
-    position: absolute; bottom: 10%; right: 5%; opacity: 0.06;
-    font-size: clamp(80px,15vw,200px); z-index: 0;
-    font-family: 'Orbitron', sans-serif; color: #fff;
-    transform: scaleX(-1); pointer-events: none;
-  }
   .title-content { position: relative; z-index: 2; text-align: center; padding: 20px; }
   #mainTitle {
     font-family: 'Orbitron', sans-serif; font-weight: 900;
@@ -123,13 +117,20 @@
     text-shadow: 0 1px 4px #000, 0 0 8px #000;
   }
   #trickCallout {
-    font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.8vw,16px); font-weight: 700;
+    font-family: 'Orbitron', sans-serif; font-size: clamp(18px,3.2vw,38px); font-weight: 900;
     color: var(--accent); text-align: center; letter-spacing: 0.1em; text-transform: uppercase;
-    text-shadow: 0 0 10px var(--accent); flex: 1; animation: calloutGlitch 0.15s ease infinite paused;
+    text-shadow: 0 0 20px var(--accent), 0 0 40px rgba(var(--ar),var(--ag),var(--ab),0.6); flex: 1;
+    animation: calloutGlitch 0.15s ease infinite paused; line-height: 1;
   }
-  #trickCallout.glitch { animation-play-state: running; }
+  #trickCallout.glitch {
+    animation: calloutGlitch 0.15s ease infinite, calloutBlink 0.09s step-end infinite;
+    text-shadow: 0 0 20px var(--accent), 0 0 50px var(--accent), 0 0 80px rgba(var(--ar),var(--ag),var(--ab),0.7);
+  }
   @keyframes calloutGlitch {
-    0%,100% { transform: none; } 25% { transform: translateX(-2px); } 50% { transform: translateX(2px); }
+    0%,100% { transform: none; } 20% { transform: translateX(-3px) skewX(-2deg); } 50% { transform: translateX(3px); } 80% { transform: translateX(-2px) skewX(1deg); }
+  }
+  @keyframes calloutBlink {
+    0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.08; }
   }
   #skillTokens { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
   .token-square {
@@ -143,9 +144,9 @@
   #hudReserved { min-width: 80px; text-align: right; font-size: clamp(8px,1vw,11px); color: rgba(255,255,255,0.2); letter-spacing: 0.05em; }
   #speedFlash {
     position: absolute; top: 68px; left: 50%; transform: translateX(-50%);
-    font-family: 'Orbitron', sans-serif; font-size: clamp(10px,1.5vw,14px); font-weight: 700;
-    color: var(--accent); text-shadow: 0 0 10px var(--accent); letter-spacing: 0.15em;
-    opacity: 0; pointer-events: none; z-index: 6; text-transform: uppercase;
+    font-family: 'Orbitron', sans-serif; font-size: clamp(16px,2.8vw,32px); font-weight: 700;
+    color: var(--accent); text-shadow: 0 0 16px var(--accent), 0 0 32px rgba(var(--ar),var(--ag),var(--ab),0.5); letter-spacing: 0.15em;
+    opacity: 0; pointer-events: none; z-index: 6; text-transform: uppercase; white-space: nowrap;
   }
   #multiplierDisplay {
     position: absolute; top: 68px; right: 16px;
@@ -202,7 +203,36 @@
 
   #whiteFlash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent); opacity: 0; pointer-events: none; z-index: 100; transition: opacity 0.05s; }
   #invertOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; mix-blend-mode: difference; background: #fff; opacity: 0; pointer-events: none; z-index: 99; transition: opacity 0.1s; }
-  #nearMissDisplay { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: clamp(14px,2.5vw,26px); font-weight: 700; color: var(--accent); text-shadow: 0 0 16px var(--accent); letter-spacing: 0.15em; opacity: 0; pointer-events: none; z-index: 6; }
+  #nearMissDisplay { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); font-family: 'Orbitron', sans-serif; font-size: clamp(22px,4vw,52px); font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent), 0 0 50px rgba(var(--ar),var(--ag),var(--ab),0.6); letter-spacing: 0.15em; opacity: 0; pointer-events: none; z-index: 6; white-space: nowrap; }
+
+  /* DUCK DISPLAY */
+  #duckDisplay {
+    font-family: 'Orbitron', sans-serif; font-size: clamp(9px,1.2vw,12px); font-weight: 700;
+    color: rgba(255,255,255,0.65); letter-spacing: 0.08em; text-align: right;
+    text-shadow: 0 1px 4px #000, 0 0 8px #000; margin-top: 2px;
+  }
+  #duckDisplay.gained { animation: duckGain 0.5s ease; }
+  @keyframes duckGain { 0% { color: #fff; text-shadow: 0 0 20px #fff, 0 0 40px var(--accent); } 100% { color: rgba(255,255,255,0.65); text-shadow: 0 1px 4px #000; } }
+
+  /* COUNTDOWN OVERLAY */
+  #countdownOverlay {
+    display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.55); z-index: 20;
+    flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  #countdownText {
+    font-family: 'Orbitron', sans-serif; font-weight: 900;
+    color: #fff; text-align: center; letter-spacing: 0.08em; line-height: 1;
+    text-shadow: 0 0 40px var(--accent), 0 0 80px var(--accent), 0 0 120px rgba(var(--ar),var(--ag),var(--ab),0.5);
+  }
+  #countdownText.pop { animation: countPop 0.65s ease-out forwards; }
+  @keyframes countPop {
+    0%   { transform: scale(2.2); opacity: 0; }
+    18%  { transform: scale(1.0); opacity: 1; }
+    78%  { transform: scale(1.0); opacity: 1; }
+    100% { transform: scale(0.85); opacity: 0; }
+  }
 
   /* Portrait / rotate overlay */
   #portraitOverlay {
@@ -241,7 +271,6 @@
 <div id="gameContainer">
   <div id="titleScreen" class="screen">
     <div id="titleGrid"></div>
-    <div id="chairWatermark">🪑</div>
     <div class="title-content">
       <div id="mainTitle">HORIZONTAL<br>OFFICE CHAIR</div>
       <div id="tagline">Lean back. Go fast. Don't die.</div>
@@ -273,6 +302,7 @@
             <div class="token-square" id="tok1"></div>
             <div class="token-square" id="tok2"></div>
           </div>
+          <div id="duckDisplay">▼ DUCK: <span id="duckCount">3</span>/8</div>
         </div>
       </div>
       <div id="hudBottom">
@@ -283,6 +313,7 @@
     <div id="speedFlash"></div>
     <div id="multiplierDisplay"></div>
     <div id="nearMissDisplay"></div>
+    <div id="countdownOverlay"><div id="countdownText"></div></div>
     <div id="touchControls">
       <div class="touch-btn" id="tbTrick">TRICK</div>
       <div class="touch-btn" id="tbFwd">FWD</div>
@@ -409,6 +440,12 @@ let isDead = false;
 let deathFreezeActive = false;
 let scoreSubmitted = false;
 let leaderboardData = [];
+
+// ==================== DUCK CHARGES ====================
+let duckCharges = 3;
+const MAX_DUCK_CHARGES = 8;
+let duckPassiveTimer = 0;
+let countingDown = false;
 
 // ==================== AUDIO ====================
 let audioCtx = null;
@@ -1103,6 +1140,7 @@ function doTrick() {
   const trick = TRICKS[Math.floor(Math.random()*TRICKS.length)];
   score += trick.pts * multiplier;
   tokens = Math.min(3, tokens + trick.tokens);
+  addDuckCharges(2);
   sfxTrick();
   showCallout(trick.callout, true);
   trickWindowOpen = false; trickWindowDuration = 0;
@@ -1119,6 +1157,20 @@ function doTrick() {
 }
 function triggerTrickBonus() { tokens=0; trickBonusActive=true; trickBonusTimer=8; multiplier=5; sfxToken(); showCallout('5X TRICK BONUS!',true); }
 function doInvert() { const inv=document.getElementById('invertOverlay'); inv.style.opacity='1'; setTimeout(()=>{inv.style.opacity='0';},800); }
+
+// ==================== DUCK HELPERS ====================
+function addDuckCharges(n) {
+  if (duckCharges >= MAX_DUCK_CHARGES) return;
+  duckCharges = Math.min(MAX_DUCK_CHARGES, duckCharges + n);
+  updateDuckUI();
+  const el = document.getElementById('duckDisplay');
+  el.classList.remove('gained');
+  void el.offsetWidth;
+  el.classList.add('gained');
+}
+function updateDuckUI() {
+  document.getElementById('duckCount').textContent = duckCharges;
+}
 
 // ==================== HUD HELPERS ====================
 let calloutTimeout=null;
@@ -1140,7 +1192,7 @@ function showWaveWarning() { const el=document.getElementById('speedFlash'); el.
 function hideWaveWarning() { document.getElementById('speedFlash').style.opacity='0'; }
 let nearMissTimeout=null;
 function showNearMiss() {
-  sfxNearMiss(); score+=50*multiplier; showCallout('NEAR MISS!',false);
+  sfxNearMiss(); score+=50*multiplier; addDuckCharges(1); showCallout('NEAR MISS!',false);
   const el=document.getElementById('nearMissDisplay'); el.textContent='+50 NEAR MISS!'; el.style.opacity='1';
   clearTimeout(nearMissTimeout); nearMissTimeout=setTimeout(()=>{el.style.opacity='0';},800);
 }
@@ -1250,18 +1302,15 @@ function initGame() {
   currentLevel=1; gameWon=false;
   // FIX: cancel any pending death flash from previous game
   if (deathFlashTimeout) { clearTimeout(deathFlashTimeout); deathFlashTimeout=null; }
+  duckCharges=3; duckPassiveTimer=0; countingDown=false;
   applyAccent(getLevelColor(1));
-  initBgLayers(); updateTokenUI(); clearCallout();
+  initBgLayers(); updateTokenUI(); updateDuckUI(); clearCallout();
   document.getElementById('speedFlash').style.opacity='0';
   document.getElementById('multiplierDisplay').textContent='';
   document.getElementById('nearMissDisplay').style.opacity='0';
   document.getElementById('whiteFlash').style.opacity='0';
   document.getElementById('invertOverlay').style.opacity='0';
-  // Show GET READY — reuse speedFlashTimeout so showSpeedFlash can cancel it
-  const sf=document.getElementById('speedFlash');
-  sf.textContent='GET READY...'; sf.style.opacity='1';
-  clearTimeout(speedFlashTimeout);
-  speedFlashTimeout=setTimeout(()=>{ sf.style.opacity='0'; sf.textContent=''; },2500);
+  document.getElementById('countdownOverlay').style.display='none';
   if ('ontouchstart' in window) document.getElementById('touchControls').classList.add('active');
 }
 
@@ -1292,6 +1341,12 @@ function gameLoop(timestamp) {
 }
 
 function update(dt) {
+  if (countingDown) { updateBgLayers(dt); return; }
+
+  // Passive duck recharge: +2 every 30 seconds
+  duckPassiveTimer += dt;
+  if (duckPassiveTimer >= 30) { duckPassiveTimer -= 30; addDuckCharges(2); }
+
   gameTime+=dt;
   speed = Math.min(BASE_SPEED + Math.floor(gameTime/20) * 15, MAX_SPEED);
   const speedTick = Math.floor(gameTime/20);
@@ -1388,10 +1443,13 @@ function render() {
 
 // ==================== INPUT ====================
 window.addEventListener('keydown', e=>{
-  if (gameState!=='game') return;
+  if (gameState!=='game' || countingDown) return;
   switch(e.code) {
     case 'Space': case 'KeyW': case 'ArrowUp': e.preventDefault(); doJump(); break;
-    case 'KeyS': case 'ArrowDown': e.preventDefault(); PLAYER.ducking=true; break;
+    case 'KeyS': case 'ArrowDown':
+      e.preventDefault();
+      if (!PLAYER.ducking && duckCharges > 0) { PLAYER.ducking=true; duckCharges--; updateDuckUI(); }
+      break;
     case 'ShiftLeft': case 'ShiftRight': doDash(); break;
     case 'KeyT': doTrick(); break;
     case 'ArrowLeft': case 'KeyA': PLAYER.hdir=-1; break;
@@ -1426,7 +1484,7 @@ function setupTouchControls() {
     el.addEventListener('mouseup',    e=>{el.classList.remove('pressed');onUp&&onUp();});
   }
   addTouch(document.getElementById('tbJump'),  ()=>{if(gameState==='game')doJump();}, ()=>{PLAYER.jumpHeld=false;});
-  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game')PLAYER.ducking=true;}, ()=>{PLAYER.ducking=false;});
+  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
   addTouch(document.getElementById('tbFwd'),   ()=>{if(gameState==='game')PLAYER.hdir=1;}, ()=>{if(PLAYER.hdir===1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbBwd'),   ()=>{if(gameState==='game')PLAYER.hdir=-1;}, ()=>{if(PLAYER.hdir===-1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbTrick'), ()=>{if(gameState==='game')doTrick();}, null);
@@ -1439,13 +1497,49 @@ function switchScreen(name) {
   if (map[name]) document.getElementById(map[name]).classList.remove('hidden');
   gameState=name;
 }
+function runCountdown() {
+  const overlay = document.getElementById('countdownOverlay');
+  const txt = document.getElementById('countdownText');
+  overlay.style.display = 'flex';
+  countingDown = true;
+
+  const steps = [
+    { text: 'READY?', size: 'clamp(36px,8vw,88px)',  dur: 900,  tone: null },
+    { text: '3',      size: 'clamp(80px,18vw,180px)', dur: 700,  tone: [440, 480, 0.18] },
+    { text: '2',      size: 'clamp(80px,18vw,180px)', dur: 700,  tone: [440, 480, 0.18] },
+    { text: '1',      size: 'clamp(80px,18vw,180px)', dur: 700,  tone: [440, 480, 0.18] },
+    { text: 'ROLL!',  size: 'clamp(48px,10vw,110px)', dur: 700,  tone: [660, 1100, 0.3] },
+  ];
+
+  let i = 0;
+  function next() {
+    if (i >= steps.length) {
+      overlay.style.display = 'none';
+      countingDown = false;
+      return;
+    }
+    const s = steps[i++];
+    txt.style.fontSize = s.size;
+    txt.textContent = s.text;
+    txt.classList.remove('pop');
+    void txt.offsetWidth;
+    txt.classList.add('pop');
+    if (s.tone) {
+      playTone('sine', s.tone[0], s.tone[1], s.tone[2], 0.35);
+      if (s.text === 'ROLL!') playTone('square', 330, 660, 0.2, 0.25, 0.06);
+    }
+    setTimeout(next, s.dur);
+  }
+  next();
+}
+
 function startGame() {
   tryLockLandscape();
-  // Dismiss portrait overlay when game starts (user chose to play)
   document.getElementById('portraitOverlay').classList.add('dismissed');
   switchScreen('game'); initGame(); lastTime=0; startBgAudio();
   if (animId) cancelAnimationFrame(animId);
   animId=requestAnimationFrame(gameLoop);
+  runCountdown();
 }
 
 // ==================== LEADERBOARD ====================
