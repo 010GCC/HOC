@@ -1391,11 +1391,6 @@ function update(dt) {
 
 function updatePlayer(dt) {
   const p=PLAYER;
-  // Duck auto-expire: each charge buys DUCK_DURATION seconds, then releases
-  if (p.ducking) {
-    duckTimer -= dt;
-    if (duckTimer <= 0) { p.ducking = false; duckTimer = 0; }
-  }
   p.bobTimer+=dt;
   if (!p.floating) p.vy+=p.GRAVITY*dt;
   if (p.jumpHeld && p.jumpHoldTimer<p.MAX_JUMP_HOLD && !p.onGround) { p.vy+=p.JUMP_HOLD_FORCE*dt; p.jumpHoldTimer+=dt; }
@@ -1455,7 +1450,7 @@ window.addEventListener('keydown', e=>{
     case 'Space': case 'KeyW': case 'ArrowUp': e.preventDefault(); doJump(); break;
     case 'KeyS': case 'ArrowDown':
       e.preventDefault();
-      if (!PLAYER.ducking && duckCharges > 0) { PLAYER.ducking=true; duckTimer=DUCK_DURATION; duckCharges--; updateDuckUI(); }
+      if (!PLAYER.ducking && duckCharges > 0) { PLAYER.ducking=true; duckCharges--; updateDuckUI(); }
       break;
     case 'ShiftLeft': case 'ShiftRight': doDash(); break;
     case 'KeyT': doTrick(); break;
@@ -1491,7 +1486,7 @@ function setupTouchControls() {
     el.addEventListener('mouseup',    e=>{el.classList.remove('pressed');onUp&&onUp();});
   }
   addTouch(document.getElementById('tbJump'),  ()=>{if(gameState==='game')doJump();}, ()=>{PLAYER.jumpHeld=false;});
-  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckTimer=DUCK_DURATION;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
+  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
   addTouch(document.getElementById('tbFwd'),   ()=>{if(gameState==='game')PLAYER.hdir=1;}, ()=>{if(PLAYER.hdir===1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbBwd'),   ()=>{if(gameState==='game')PLAYER.hdir=-1;}, ()=>{if(PLAYER.hdir===-1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbTrick'), ()=>{if(gameState==='game')doTrick();}, null);
