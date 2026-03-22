@@ -447,6 +447,11 @@ let duckTimer = 0;
 let duckPassiveTimer = 0;
 let countingDown = false;
 
+// ==================== MIRROR MODE (easter egg) ====================
+let mirrorMode = false;
+let readyPhase = false;   // true only during the READY? countdown window
+let eggBackHeld = false, eggDuckHeld = false;
+
 // ==================== AUDIO ====================
 let audioCtx = null;
 let bgPulseNode = null, bgLfoNode = null, bgGainNode = null;
@@ -1305,6 +1310,7 @@ function initGame() {
   // FIX: cancel any pending death flash from previous game
   if (deathFlashTimeout) { clearTimeout(deathFlashTimeout); deathFlashTimeout=null; }
   duckCharges=3; duckTimer=0; duckPassiveTimer=0; countingDown=false;
+  mirrorMode=false; readyPhase=false; eggBackHeld=false; eggDuckHeld=false;
   applyAccent(getLevelColor(1));
   initBgLayers(); updateTokenUI(); updateDuckUI(); clearCallout();
   document.getElementById('speedFlash').style.opacity='0';
@@ -1423,6 +1429,7 @@ function render() {
   ctx2d.save();
   if (shakeTimer>0) { ctx2d.translate((Math.random()-0.5)*shakeIntensity*2,(Math.random()-0.5)*shakeIntensity*2); }
   ctx2d.fillStyle='#000'; ctx2d.fillRect(0,0,W,H);
+  if (mirrorMode) { ctx2d.translate(W, 0); ctx2d.scale(-1, 1); }
 
   // Watermark
   ctx2d.save();
@@ -1443,8 +1450,27 @@ function render() {
   ctx2d.restore();
 }
 
+// ==================== MIRROR MODE ACTIVATION ====================
+function activateMirrorMode() {
+  if (mirrorMode) return;
+  mirrorMode = true;
+  readyPhase = false;
+  // Flash + cryptic message
+  const wf = document.getElementById('whiteFlash');
+  wf.style.opacity = '1';
+  setTimeout(() => { wf.style.opacity = '0'; }, 250);
+  setTimeout(() => { showCallout('WELCOME TO THE OASIS', true); }, 300);
+  setTimeout(() => { clearCallout(); }, 2500);
+}
+
 // ==================== INPUT ====================
 window.addEventListener('keydown', e=>{
+  // Easter egg: hold back + duck during READY? phase
+  if (readyPhase) {
+    if (e.code==='ArrowLeft'||e.code==='KeyA') eggBackHeld=true;
+    if (e.code==='KeyS'||e.code==='ArrowDown') eggDuckHeld=true;
+    if (eggBackHeld && eggDuckHeld) activateMirrorMode();
+  }
   if (gameState!=='game' || countingDown) return;
   switch(e.code) {
     case 'Space': case 'KeyW': case 'ArrowUp': e.preventDefault(); doJump(); break;
@@ -1454,15 +1480,17 @@ window.addEventListener('keydown', e=>{
       break;
     case 'ShiftLeft': case 'ShiftRight': doDash(); break;
     case 'KeyT': doTrick(); break;
-    case 'ArrowLeft': case 'KeyA': PLAYER.hdir=-1; break;
-    case 'ArrowRight': case 'KeyD': PLAYER.hdir=1; break;
+    case 'ArrowLeft': case 'KeyA': PLAYER.hdir = mirrorMode ? 1 : -1; break;
+    case 'ArrowRight': case 'KeyD': PLAYER.hdir = mirrorMode ? -1 : 1; break;
   }
 });
 window.addEventListener('keyup', e=>{
+  if (e.code==='ArrowLeft'||e.code==='KeyA') eggBackHeld=false;
+  if (e.code==='KeyS'||e.code==='ArrowDown') eggDuckHeld=false;
   if (e.code==='Space'||e.code==='KeyW'||e.code==='ArrowUp') PLAYER.jumpHeld=false;
   if (e.code==='KeyS'||e.code==='ArrowDown') PLAYER.ducking=false;
-  if (e.code==='ArrowLeft'||e.code==='KeyA') { if(PLAYER.hdir===-1) PLAYER.hdir=0; }
-  if (e.code==='ArrowRight'||e.code==='KeyD') { if(PLAYER.hdir===1) PLAYER.hdir=0; }
+  if (e.code==='ArrowLeft'||e.code==='KeyA') { if(PLAYER.hdir===-1||PLAYER.hdir===1) PLAYER.hdir=0; }
+  if (e.code==='ArrowRight'||e.code==='KeyD') { if(PLAYER.hdir===1||PLAYER.hdir===-1) PLAYER.hdir=0; }
 });
 
 function doJump() {
@@ -1525,6 +1553,7 @@ function runCountdown() {
     txt.classList.remove('pop');
     void txt.offsetWidth;
     txt.classList.add('pop');
+    readyPhase = (s.text === 'READY?');
     if (s.tone) {
       playTone('sine', s.tone[0], s.tone[1], s.tone[2], 0.35);
       if (s.text === 'ROLL!') playTone('square', 330, 660, 0.2, 0.25, 0.06);
