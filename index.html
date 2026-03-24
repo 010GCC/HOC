@@ -592,8 +592,8 @@ function getObstacleForPhase() {
 }
 
 function trySpawnObstacle(dt) {
-  // FIX: grace period — no obstacles for first 3 seconds
-  if (gameTime < 3.0) return;
+  // grace period — no obstacles for first 1.5 seconds
+  if (gameTime < 1.5) return;
 
   obstacleSpawnTimer += dt;
   if (obstacleSpawnTimer < nextObstacleInterval) return;
@@ -1304,7 +1304,7 @@ function initGame() {
   trickWindowOpen=false; trickWindowDuration=0; lastTrickWindow=0;
   nextTrickWindow=15+Math.random()*5;
   waveActive=false; waveTimer=0; waveCount=0; nextWave=300; waveCooldown=0;
-  obstacleSpawnTimer=0; nextObstacleInterval=4.0; // start with a long gap
+  obstacleSpawnTimer=0; nextObstacleInterval=2.0; // initial gap
   isDead=false; deathFreezeActive=false; shakeTimer=0;
   currentLevel=1; gameWon=false;
   // FIX: cancel any pending death flash from previous game
