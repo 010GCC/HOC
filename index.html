@@ -1461,6 +1461,8 @@ function activateMirrorMode() {
   setTimeout(() => { wf.style.opacity = '0'; }, 250);
   setTimeout(() => { showCallout('WELCOME TO THE OASIS', true); }, 300);
   setTimeout(() => { clearCallout(); }, 2500);
+  // Invert colors for the duration of mirror mode
+  document.getElementById('invertOverlay').style.opacity = '1';
 }
 
 // ==================== INPUT ====================
