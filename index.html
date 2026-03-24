@@ -1514,9 +1514,15 @@ function setupTouchControls() {
     el.addEventListener('mouseup',    e=>{el.classList.remove('pressed');onUp&&onUp();});
   }
   addTouch(document.getElementById('tbJump'),  ()=>{if(gameState==='game')doJump();}, ()=>{PLAYER.jumpHeld=false;});
-  addTouch(document.getElementById('tbDuck'),  ()=>{if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckCharges--;updateDuckUI();}}, ()=>{PLAYER.ducking=false;});
+  addTouch(document.getElementById('tbDuck'),  ()=>{
+    if(readyPhase){eggDuckHeld=true;if(eggBackHeld&&eggDuckHeld)activateMirrorMode();}
+    if(gameState==='game'&&!countingDown&&!PLAYER.ducking&&duckCharges>0){PLAYER.ducking=true;duckCharges--;updateDuckUI();}
+  }, ()=>{eggDuckHeld=false;PLAYER.ducking=false;});
   addTouch(document.getElementById('tbFwd'),   ()=>{if(gameState==='game')PLAYER.hdir=1;}, ()=>{if(PLAYER.hdir===1)PLAYER.hdir=0;});
-  addTouch(document.getElementById('tbBwd'),   ()=>{if(gameState==='game')PLAYER.hdir=-1;}, ()=>{if(PLAYER.hdir===-1)PLAYER.hdir=0;});
+  addTouch(document.getElementById('tbBwd'),   ()=>{
+    if(readyPhase){eggBackHeld=true;if(eggBackHeld&&eggDuckHeld)activateMirrorMode();}
+    if(gameState==='game')PLAYER.hdir=-1;
+  }, ()=>{eggBackHeld=false;if(PLAYER.hdir===-1)PLAYER.hdir=0;});
   addTouch(document.getElementById('tbTrick'), ()=>{if(gameState==='game')doTrick();}, null);
 }
 
