@@ -1554,7 +1554,7 @@ function runCountdown() {
     txt.classList.remove('pop');
     void txt.offsetWidth;
     txt.classList.add('pop');
-    readyPhase = (s.text === 'ROLL!');
+    readyPhase = (s.text === '3' || s.text === '2' || s.text === '1' || s.text === 'ROLL!');
     if (s.tone) {
       playTone('sine', s.tone[0], s.tone[1], s.tone[2], 0.35);
       if (s.text === 'ROLL!') playTone('square', 330, 660, 0.2, 0.25, 0.06);
