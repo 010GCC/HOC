@@ -1,1 +1,121 @@
-@file:///workspace/hoc-index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>HORIZONTAL OFFICE CHAIR</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link rel="stylesheet" href="hoc.css">
+
+</head>
+<body>
+<div id="gameContainer">
+  <div id="titleScreen" class="screen">
+    <div id="titleGrid"></div>
+    <div class="title-content">
+      <div id="mainTitle">HORIZONTAL<br>OFFICE CHAIR</div>
+      <div id="tagline">Lean back. Go fast. Don't die.</div>
+      <div id="controlsHint">
+        SPACE / ↑ &nbsp;JUMP &nbsp;|&nbsp; ↓ &nbsp;DUCK &nbsp;|&nbsp; SHIFT &nbsp;DASH &nbsp;|&nbsp; T &nbsp;TRICK<br>
+        ← / → &nbsp;MOVE CHAIR &nbsp;|&nbsp; JUMP AGAIN IN MID-AIR FOR <span>DOUBLE JUMP</span><br>
+        DODGE THE <span>PINK OBSTACLES</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="playBtn">PLAY</button>
+        <button class="btn btn-outline" id="lbBtn">LEADERBOARD</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameScreen" class="screen hidden">
+    <canvas id="gameCanvas"></canvas>
+    <div id="hud">
+      <div id="hudTop">
+        <div id="hudTopLeft">
+          <div id="scoreDisplay">0</div>
+          <div id="spdDisplay">SPD: 0 km/h</div>
+        </div>
+        <div id="trickCallout"></div>
+        <div id="hudTopRight">
+          <div id="levelDisplay">LVL 1 / 67</div>
+          <div id="skillTokens">
+            <div class="token-square" id="tok0"></div>
+            <div class="token-square" id="tok1"></div>
+            <div class="token-square" id="tok2"></div>
+          </div>
+          <div id="duckDisplay">▼ DUCK: <span id="duckCount">3</span>/8</div>
+        </div>
+      </div>
+      <div id="hudBottom">
+        <div id="hudReserved">HOC v1.3</div>
+      </div>
+    </div>
+    <div id="speedFlash"></div>
+    <div id="multiplierDisplay"></div>
+    <div id="nearMissDisplay"></div>
+    <div id="countdownOverlay"><div id="countdownText"></div></div>
+    <div id="touchControls">
+      <div class="touch-btn" id="tbTrick">TRICK</div>
+      <div class="touch-btn" id="tbFwd">FWD</div>
+      <div class="touch-btn" id="tbBwd">BWD</div>
+      <div class="touch-btn" id="tbJump">JUMP</div>
+      <div class="touch-btn" id="tbDuck">DUCK</div>
+    </div>
+  </div>
+
+  <div id="gameOverScreen" class="screen hidden">
+    <div id="gameOverTitle">GAME OVER</div>
+    <div id="deathMessage"></div>
+    <div id="finalScore"></div>
+    <div id="tierMessage"></div>
+    <div id="nameEntryArea">
+      <label for="nameInput">ENTER YOUR NAME FOR THE LEADERBOARD:</label>
+      <input type="text" id="nameInput" maxlength="12" placeholder="PLAYER" autocomplete="off" spellcheck="false">
+      <button class="btn" id="submitNameBtn">SUBMIT SCORE</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
+      <button class="btn btn-outline" id="goLbBtn">LEADERBOARD</button>
+    </div>
+  </div>
+
+  <div id="leaderboardScreen" class="screen hidden">
+    <div id="lbTitle">LEADERBOARD</div>
+    <div class="lbScrollWrap">
+      <table id="lbTable">
+        <thead><tr><th>#</th><th>NAME</th><th>SCORE</th><th>DATE</th></tr></thead>
+        <tbody id="lbBody"></tbody>
+      </table>
+    </div>
+    <div id="lbStatus">LOADING...</div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn btn-outline" id="lbBackBtn">BACK</button>
+    </div>
+  </div>
+
+  <div id="whiteFlash"></div>
+  <div id="invertOverlay"></div>
+
+  <!-- Portrait / rotate prompt -->
+  <div id="portraitOverlay">
+    <div id="rotateIcon">📱</div>
+    <div id="portraitTitle">ROTATE TO PLAY</div>
+    <div id="portraitSub">
+      LANDSCAPE FEELS BEST<br>
+      BUT PORTRAIT WORKS TOO — FULLSCREEN EITHER WAY<br><br>
+      Tip: disable rotation lock for landscape
+    </div>
+    <button class="btn" id="portraitPlayBtn" style="font-size:12px;padding:10px 28px;margin-bottom:12px;">PLAY ANYWAY</button>
+  </div>
+</div>
+
+<script src="hoc-a.js"></script>
+<script src="hoc-b.js"></script>
+</body>
+</html>
