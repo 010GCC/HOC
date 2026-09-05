@@ -1,35 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>HORIZONTAL OFFICE CHAIR</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>
-  html,body{margin:0;background:#0a0a0a;color:#fff;font-family:monospace;height:100%;display:flex;align-items:center;justify-content:center}
-</style>
-</head>
-<body>
-<div id="boot">LOADING HOC…</div>
+<link rel="icon" href="favicon.ico">
+<style>html,body{margin:0;background:#0a0a0a;color:#fff;font:14px monospace;height:100%;display:flex;align-items:center;justify-content:center}</style>
+</head><body><div id="boot">LOADING HOC…</div>
 <script>
-(async function () {
-  const SOURCE = "https://raw.githubusercontent.com/010GCC/HOC/d35578df57508d647e1bdc9e8bd499bd8a7a83de/index.html";
-  const REPLACEMENTS = [["<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">", "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">"], ["  html, body {\n    width: 100%; height: 100%;\n    background: #0a0a0a;\n    color: #fff;\n    font-family: 'Share Tech Mono', monospace;\n    overflow: hidden;\n    user-select: none;\n    -webkit-user-select: none;\n  }\n  body {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }", "  html, body {\n    width: 100%;\n    height: 100%;\n    height: 100dvh;\n    min-height: 100vh;\n    min-height: 100dvh;\n    background: #0a0a0a;\n    color: #fff;\n    font-family: 'Share Tech Mono', monospace;\n    overflow: hidden;\n    user-select: none;\n    -webkit-user-select: none;\n    overscroll-behavior: none;\n    touch-action: manipulation;\n    -webkit-tap-highlight-color: transparent;\n  }\n  body {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);\n  }"], ["  #gameContainer {\n    position: relative;\n    --gw: min(1280px, 100vw, calc(100vh * 16 / 9));\n    width: var(--gw);\n    height: calc(var(--gw) * 9 / 16);\n    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 120px rgba(0,0,0,0.5);\n  }", "  /* Mobile-first: fill the visible viewport (no letterboxing) */\n  #gameContainer {\n    position: relative;\n    width: 100%;\n    height: 100%;\n    max-width: 100%;\n    max-height: 100%;\n    box-shadow: none;\n  }\n  /* Desktop / fine pointer: keep a centered 16:9 arcade frame */\n  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {\n    #gameContainer {\n      --gw: min(1280px, 100vw, calc(100dvh * 16 / 9));\n      width: var(--gw);\n      height: calc(var(--gw) * 9 / 16);\n      box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 120px rgba(0,0,0,0.5);\n    }\n  }"], ["  #touchControls {\n    position: absolute; bottom: 40px; left: 0; width: 100%; height: 165px; z-index: 8; pointer-events: none; display: none;\n  }", "  #touchControls {\n    position: absolute;\n    bottom: calc(24px + env(safe-area-inset-bottom, 0px));\n    left: 0;\n    width: 100%;\n    height: 165px;\n    z-index: 8;\n    pointer-events: none;\n    display: none;\n    padding-left: env(safe-area-inset-left, 0px);\n    padding-right: env(safe-area-inset-right, 0px);\n  }"], ["    <div id=\"portraitSub\">\n      HORIZONTAL OFFICE CHAIR<br>\n      IS DESIGNED FOR LANDSCAPE MODE<br><br>\n      Tip: disable rotation lock on your device\n    </div>\n    <button class=\"btn\" id=\"portraitPlayBtn\" style=\"font-size:12px;padding:10px 28px;margin-bottom:12px;\">PLAY IN PORTRAIT ANYWAY</button>", "    <div id=\"portraitSub\">\n      LANDSCAPE FEELS BEST<br>\n      BUT PORTRAIT WORKS TOO \u2014 FULLSCREEN EITHER WAY<br><br>\n      Tip: disable rotation lock for landscape\n    </div>\n    <button class=\"btn\" id=\"portraitPlayBtn\" style=\"font-size:12px;padding:10px 28px;margin-bottom:12px;\">PLAY ANYWAY</button>"], ["function resizeCanvas() {\n  const container = document.getElementById('gameContainer');\n  W = container.clientWidth;\n  H = container.clientHeight;\n  canvas.width = W;\n  canvas.height = H;\n  FLOOR_Y = H - 80;\n}", "function resizeCanvas() {\n  const container = document.getElementById('gameContainer');\n  const prevFloor = FLOOR_Y;\n  const prevH = H;\n  W = Math.max(1, container.clientWidth);\n  H = Math.max(1, container.clientHeight);\n  canvas.width = W;\n  canvas.height = H;\n  // Keep a playable floor band on short phones / tall portrait\n  FLOOR_Y = H - Math.max(56, Math.min(96, Math.round(H * 0.11)));\n  if (prevH > 0 && typeof PLAYER !== 'undefined') {\n    const dy = FLOOR_Y - prevFloor;\n    PLAYER.y += dy;\n    if (PLAYER.onGround) PLAYER.y = FLOOR_Y - (PLAYER.ducking ? PLAYER.h * 0.5 : PLAYER.h);\n    PLAYER.defaultX = W * 0.18;\n    PLAYER.x = Math.max(8, Math.min(PLAYER.x, W - PLAYER.w - 8));\n  }\n}"], ["window.addEventListener('resize',()=>{if(gameState==='game'){resizeCanvas();FLOOR_Y=H-80;initBgLayers();resetPlayer();}});", "function onViewportChange() {\n  resizeCanvas();\n  if (gameState === 'game') initBgLayers();\n}\nwindow.addEventListener('resize', onViewportChange);\nif (window.visualViewport) {\n  window.visualViewport.addEventListener('resize', onViewportChange);\n  window.visualViewport.addEventListener('scroll', onViewportChange);\n}"], ["window.addEventListener('orientationchange', () => {\n  setTimeout(() => { // small delay for orientation to settle\n    if (window.innerWidth > window.innerHeight) {\n      document.getElementById('portraitOverlay').classList.add('dismissed');\n    }\n  }, 300);\n});", "window.addEventListener('orientationchange', () => {\n  setTimeout(() => { // small delay for orientation to settle\n    if (window.innerWidth > window.innerHeight) {\n      document.getElementById('portraitOverlay').classList.add('dismissed');\n    }\n    onViewportChange();\n  }, 300);\n});"], ["HOC v1.2", "HOC v1.3"]];
+(async () => {
   try {
-    const res = await fetch(SOURCE, { cache: "no-store" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    let html = await res.text();
-    for (const [from, to] of REPLACEMENTS) {
-      if (!html.includes(from)) throw new Error("Patch target missing");
-      html = html.replace(from, to);
+    const n = 4;
+    let b64 = '';
+    for (let i = 0; i < n; i++) {
+      const r = await fetch('payload.' + i + '.b64', { cache: 'no-store' });
+      if (!r.ok) throw new Error('missing payload.' + i + '.b64');
+      b64 += (await r.text()).trim();
     }
-    document.open();
-    document.write(html);
-    document.close();
-  } catch (err) {
-    document.getElementById("boot").textContent = "Failed to load game: " + err;
+    const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const ds = new DecompressionStream('gzip');
+    const stream = new Blob([bin]).stream().pipeThrough(ds);
+    const html = await new Response(stream).text();
+    document.open(); document.write(html); document.close();
+  } catch (e) {
+    document.getElementById('boot').textContent = 'Boot failed: ' + e;
   }
 })();
-</script>
-</body>
-</html>
+</script></body></html>
