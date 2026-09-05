@@ -3,119 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>HORIZONTAL OFFICE CHAIR</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<link rel="stylesheet" href="hoc.css">
-
+<style>
+  html,body{margin:0;background:#0a0a0a;color:#fff;font-family:monospace;height:100%;display:flex;align-items:center;justify-content:center}
+</style>
 </head>
 <body>
-<div id="gameContainer">
-  <div id="titleScreen" class="screen">
-    <div id="titleGrid"></div>
-    <div class="title-content">
-      <div id="mainTitle">HORIZONTAL<br>OFFICE CHAIR</div>
-      <div id="tagline">Lean back. Go fast. Don't die.</div>
-      <div id="controlsHint">
-        SPACE / ↑ &nbsp;JUMP &nbsp;|&nbsp; ↓ &nbsp;DUCK &nbsp;|&nbsp; SHIFT &nbsp;DASH &nbsp;|&nbsp; T &nbsp;TRICK<br>
-        ← / → &nbsp;MOVE CHAIR &nbsp;|&nbsp; JUMP AGAIN IN MID-AIR FOR <span>DOUBLE JUMP</span><br>
-        DODGE THE <span>PINK OBSTACLES</span>
-      </div>
-      <div class="btn-row">
-        <button class="btn" id="playBtn">PLAY</button>
-        <button class="btn btn-outline" id="lbBtn">LEADERBOARD</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="gameScreen" class="screen hidden">
-    <canvas id="gameCanvas"></canvas>
-    <div id="hud">
-      <div id="hudTop">
-        <div id="hudTopLeft">
-          <div id="scoreDisplay">0</div>
-          <div id="spdDisplay">SPD: 0 km/h</div>
-        </div>
-        <div id="trickCallout"></div>
-        <div id="hudTopRight">
-          <div id="levelDisplay">LVL 1 / 67</div>
-          <div id="skillTokens">
-            <div class="token-square" id="tok0"></div>
-            <div class="token-square" id="tok1"></div>
-            <div class="token-square" id="tok2"></div>
-          </div>
-          <div id="duckDisplay">▼ DUCK: <span id="duckCount">3</span>/8</div>
-        </div>
-      </div>
-      <div id="hudBottom">
-        <div id="hudReserved">HOC v1.3</div>
-      </div>
-    </div>
-    <div id="speedFlash"></div>
-    <div id="multiplierDisplay"></div>
-    <div id="nearMissDisplay"></div>
-    <div id="countdownOverlay"><div id="countdownText"></div></div>
-    <div id="touchControls">
-      <div class="touch-btn" id="tbTrick">TRICK</div>
-      <div class="touch-btn" id="tbFwd">FWD</div>
-      <div class="touch-btn" id="tbBwd">BWD</div>
-      <div class="touch-btn" id="tbJump">JUMP</div>
-      <div class="touch-btn" id="tbDuck">DUCK</div>
-    </div>
-  </div>
-
-  <div id="gameOverScreen" class="screen hidden">
-    <div id="gameOverTitle">GAME OVER</div>
-    <div id="deathMessage"></div>
-    <div id="finalScore"></div>
-    <div id="tierMessage"></div>
-    <div id="nameEntryArea">
-      <label for="nameInput">ENTER YOUR NAME FOR THE LEADERBOARD:</label>
-      <input type="text" id="nameInput" maxlength="12" placeholder="PLAYER" autocomplete="off" spellcheck="false">
-      <button class="btn" id="submitNameBtn">SUBMIT SCORE</button>
-    </div>
-    <div class="btn-row">
-      <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
-      <button class="btn btn-outline" id="goLbBtn">LEADERBOARD</button>
-    </div>
-  </div>
-
-  <div id="leaderboardScreen" class="screen hidden">
-    <div id="lbTitle">LEADERBOARD</div>
-    <div class="lbScrollWrap">
-      <table id="lbTable">
-        <thead><tr><th>#</th><th>NAME</th><th>SCORE</th><th>DATE</th></tr></thead>
-        <tbody id="lbBody"></tbody>
-      </table>
-    </div>
-    <div id="lbStatus">LOADING...</div>
-    <div class="btn-row" style="margin-top:16px;">
-      <button class="btn btn-outline" id="lbBackBtn">BACK</button>
-    </div>
-  </div>
-
-  <div id="whiteFlash"></div>
-  <div id="invertOverlay"></div>
-
-  <!-- Portrait / rotate prompt -->
-  <div id="portraitOverlay">
-    <div id="rotateIcon">📱</div>
-    <div id="portraitTitle">ROTATE TO PLAY</div>
-    <div id="portraitSub">
-      LANDSCAPE FEELS BEST<br>
-      BUT PORTRAIT WORKS TOO — FULLSCREEN EITHER WAY<br><br>
-      Tip: disable rotation lock for landscape
-    </div>
-    <button class="btn" id="portraitPlayBtn" style="font-size:12px;padding:10px 28px;margin-bottom:12px;">PLAY ANYWAY</button>
-  </div>
-</div>
-
-<script src="hoc-a.js"></script>
-<script src="hoc-b.js"></script>
+<div id="boot">LOADING HOC…</div>
+<script>
+(async function () {
+  const SOURCE = "https://raw.githubusercontent.com/010GCC/HOC/d35578df57508d647e1bdc9e8bd499bd8a7a83de/index.html";
+  const REPLACEMENTS = [["<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">", "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\">"], ["  html, body {\n    width: 100%; height: 100%;\n    background: #0a0a0a;\n    color: #fff;\n    font-family: 'Share Tech Mono', monospace;\n    overflow: hidden;\n    user-select: none;\n    -webkit-user-select: none;\n  }\n  body {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }", "  html, body {\n    width: 100%;\n    height: 100%;\n    height: 100dvh;\n    min-height: 100vh;\n    min-height: 100dvh;\n    background: #0a0a0a;\n    color: #fff;\n    font-family: 'Share Tech Mono', monospace;\n    overflow: hidden;\n    user-select: none;\n    -webkit-user-select: none;\n    overscroll-behavior: none;\n    touch-action: manipulation;\n    -webkit-tap-highlight-color: transparent;\n  }\n  body {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);\n  }"], ["  #gameContainer {\n    position: relative;\n    --gw: min(1280px, 100vw, calc(100vh * 16 / 9));\n    width: var(--gw);\n    height: calc(var(--gw) * 9 / 16);\n    box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 120px rgba(0,0,0,0.5);\n  }", "  /* Mobile-first: fill the visible viewport (no letterboxing) */\n  #gameContainer {\n    position: relative;\n    width: 100%;\n    height: 100%;\n    max-width: 100%;\n    max-height: 100%;\n    box-shadow: none;\n  }\n  /* Desktop / fine pointer: keep a centered 16:9 arcade frame */\n  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {\n    #gameContainer {\n      --gw: min(1280px, 100vw, calc(100dvh * 16 / 9));\n      width: var(--gw);\n      height: calc(var(--gw) * 9 / 16);\n      box-shadow: 0 0 60px rgba(0,0,0,0.8), 0 0 120px rgba(0,0,0,0.5);\n    }\n  }"], ["  #touchControls {\n    position: absolute; bottom: 40px; left: 0; width: 100%; height: 165px; z-index: 8; pointer-events: none; display: none;\n  }", "  #touchControls {\n    position: absolute;\n    bottom: calc(24px + env(safe-area-inset-bottom, 0px));\n    left: 0;\n    width: 100%;\n    height: 165px;\n    z-index: 8;\n    pointer-events: none;\n    display: none;\n    padding-left: env(safe-area-inset-left, 0px);\n    padding-right: env(safe-area-inset-right, 0px);\n  }"], ["    <div id=\"portraitSub\">\n      HORIZONTAL OFFICE CHAIR<br>\n      IS DESIGNED FOR LANDSCAPE MODE<br><br>\n      Tip: disable rotation lock on your device\n    </div>\n    <button class=\"btn\" id=\"portraitPlayBtn\" style=\"font-size:12px;padding:10px 28px;margin-bottom:12px;\">PLAY IN PORTRAIT ANYWAY</button>", "    <div id=\"portraitSub\">\n      LANDSCAPE FEELS BEST<br>\n      BUT PORTRAIT WORKS TOO \u2014 FULLSCREEN EITHER WAY<br><br>\n      Tip: disable rotation lock for landscape\n    </div>\n    <button class=\"btn\" id=\"portraitPlayBtn\" style=\"font-size:12px;padding:10px 28px;margin-bottom:12px;\">PLAY ANYWAY</button>"], ["function resizeCanvas() {\n  const container = document.getElementById('gameContainer');\n  W = container.clientWidth;\n  H = container.clientHeight;\n  canvas.width = W;\n  canvas.height = H;\n  FLOOR_Y = H - 80;\n}", "function resizeCanvas() {\n  const container = document.getElementById('gameContainer');\n  const prevFloor = FLOOR_Y;\n  const prevH = H;\n  W = Math.max(1, container.clientWidth);\n  H = Math.max(1, container.clientHeight);\n  canvas.width = W;\n  canvas.height = H;\n  // Keep a playable floor band on short phones / tall portrait\n  FLOOR_Y = H - Math.max(56, Math.min(96, Math.round(H * 0.11)));\n  if (prevH > 0 && typeof PLAYER !== 'undefined') {\n    const dy = FLOOR_Y - prevFloor;\n    PLAYER.y += dy;\n    if (PLAYER.onGround) PLAYER.y = FLOOR_Y - (PLAYER.ducking ? PLAYER.h * 0.5 : PLAYER.h);\n    PLAYER.defaultX = W * 0.18;\n    PLAYER.x = Math.max(8, Math.min(PLAYER.x, W - PLAYER.w - 8));\n  }\n}"], ["window.addEventListener('resize',()=>{if(gameState==='game'){resizeCanvas();FLOOR_Y=H-80;initBgLayers();resetPlayer();}});", "function onViewportChange() {\n  resizeCanvas();\n  if (gameState === 'game') initBgLayers();\n}\nwindow.addEventListener('resize', onViewportChange);\nif (window.visualViewport) {\n  window.visualViewport.addEventListener('resize', onViewportChange);\n  window.visualViewport.addEventListener('scroll', onViewportChange);\n}"], ["window.addEventListener('orientationchange', () => {\n  setTimeout(() => { // small delay for orientation to settle\n    if (window.innerWidth > window.innerHeight) {\n      document.getElementById('portraitOverlay').classList.add('dismissed');\n    }\n  }, 300);\n});", "window.addEventListener('orientationchange', () => {\n  setTimeout(() => { // small delay for orientation to settle\n    if (window.innerWidth > window.innerHeight) {\n      document.getElementById('portraitOverlay').classList.add('dismissed');\n    }\n    onViewportChange();\n  }, 300);\n});"], ["HOC v1.2", "HOC v1.3"]];
+  try {
+    const res = await fetch(SOURCE, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    let html = await res.text();
+    for (const [from, to] of REPLACEMENTS) {
+      if (!html.includes(from)) throw new Error("Patch target missing");
+      html = html.replace(from, to);
+    }
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (err) {
+    document.getElementById("boot").textContent = "Failed to load game: " + err;
+  }
+})();
+</script>
 </body>
 </html>
