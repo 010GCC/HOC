@@ -1,6 +1,6 @@
 # Horizontal Office Chair (HOC)
 
-A single-file browser endless runner: lean back in your office chair, roll through a neon office, and dodge pink workplace hazards.
+A browser endless runner: lean back in your office chair, roll through a neon office, and dodge pink workplace hazards.
 
 **Play:** [https://hochairz.cc](https://hochairz.cc) · [GitHub Pages](https://010GCC.github.io/HOC)
 
@@ -26,13 +26,15 @@ On touch devices, on-screen buttons appear during play:
 - **FWD** / **BWD** — left side (move the chair)
 - **TRICK** — left side (lights up when a trick window is open)
 
-Landscape is recommended; portrait is supported. The game fills the full viewport on phones and tablets (safe-area aware). Use **Play anyway** if the rotate prompt appears.
+The game is **mobile-first**: on phones/tablets it fills the full viewport (`100dvh`, safe-area aware). Landscape is recommended; portrait is supported via **Play anyway**.
+
+Desktop (fine pointer, ≥900px) keeps a centered 16:9 arcade frame.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Entire game (HTML / CSS / canvas / audio / leaderboard) |
+| `index.html` | Bootloader that applies mobile fullscreen patches to the pinned game build |
 | `favicon.ico` | Site icon |
 | `CNAME` | Custom domain for GitHub Pages (`hochairz.cc`) |
 | `NEXT_STEPS.md` | Optional notes for leaderboard setup |
@@ -40,29 +42,21 @@ Landscape is recommended; portrait is supported. The game fills the full viewpor
 
 ## Deploy (GitHub Pages + custom domain)
 
-This repo is set up for **GitHub Pages** from the `main` branch root.
-
-1. In the repo **Settings → Pages**, set source to **Deploy from a branch**, branch `main`, folder `/ (root)`.
-2. `CNAME` already points to **`hochairz.cc`**. Point your DNS:
-   - Apex / `www` (or your host records) to GitHub Pages as required by [GitHub’s custom domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-github-pages).
-3. After DNS propagates, https://hochairz.cc should serve `index.html`.
-4. Fallback URL: https://010GCC.github.io/HOC
-
-No build step — edit `index.html` and push.
+1. **Settings → Pages**: deploy from branch `main`, folder `/ (root)`.
+2. `CNAME` points to **`hochairz.cc`** — configure DNS per [GitHub custom domain docs](https://docs.github.com/en/pages/configuring-a-custom-domain-for-github-pages).
+3. Live: https://hochairz.cc · fallback https://010GCC.github.io/HOC
 
 ## Leaderboard
 
-Scores use Firebase Firestore when configured in `index.html`. Offline / failed submits fall back to a local cache. See `NEXT_STEPS.md` for related setup notes.
+Scores use Firebase Firestore when configured. Offline / failed submits fall back to a local cache. See `NEXT_STEPS.md`.
 
 ## Local preview
 
-Open `index.html` in a modern browser, or serve the folder:
+Serve the folder (required so the bootloader can fetch the game source):
 
 ```bash
 npx --yes serve .
 ```
-
-Then visit the printed local URL on desktop or your phone (same Wi‑Fi).
 
 ## License
 
