@@ -21,15 +21,20 @@
 <script>
 (async function () {
   const SOURCE = "https://raw.githubusercontent.com/010GCC/HOC/d35578df57508d647e1bdc9e8bd499bd8a7a83de/index.html";
+  const PATCH_FILES = ["patches-0.json","patches-1.json","patches-2.json","patches-3.json"];
   try {
-    const [res, pa, pb] = await Promise.all([
-      fetch(SOURCE, { cache: "no-store" }),
-      fetch("patches-a.json", { cache: "no-store" }),
-      fetch("patches-b.json", { cache: "no-store" }),
-    ]);
+    const fetches = [fetch(SOURCE, { cache: "no-store" })].concat(
+      PATCH_FILES.map(function (f) { return fetch(f, { cache: "no-store" }); })
+    );
+    const results = await Promise.all(fetches);
+    const res = results[0];
     if (!res.ok) throw new Error("HTTP " + res.status);
-    if (!pa.ok || !pb.ok) throw new Error("Patch files missing");
-    const REPLACEMENTS = (await pa.json()).concat(await pb.json());
+    const patchRes = results.slice(1);
+    for (let i = 0; i < patchRes.length; i++) {
+      if (!patchRes[i].ok) throw new Error("Missing " + PATCH_FILES[i]);
+    }
+    const parts = await Promise.all(patchRes.map(function (r) { return r.json(); }));
+    const REPLACEMENTS = [].concat.apply([], parts);
     let html = await res.text();
     for (const [from, to] of REPLACEMENTS) {
       if (!html.includes(from)) throw new Error("Patch target missing");
