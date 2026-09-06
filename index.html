@@ -1,1 +1,47 @@
-PLACEHOLDER
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>HORIZONTAL OFFICE CHAIR</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HOC">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+  html,body{margin:0;background:#0a0a0a;color:#fff;font-family:monospace;height:100%;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div id="boot">LOADING HOC…</div>
+<script>
+(async function () {
+  const SOURCE = "https://raw.githubusercontent.com/010GCC/HOC/d35578df57508d647e1bdc9e8bd499bd8a7a83de/index.html";
+  try {
+    const [res, pa, pb] = await Promise.all([
+      fetch(SOURCE, { cache: "no-store" }),
+      fetch("patches-a.json", { cache: "no-store" }),
+      fetch("patches-b.json", { cache: "no-store" }),
+    ]);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    if (!pa.ok || !pb.ok) throw new Error("Patch files missing");
+    const REPLACEMENTS = (await pa.json()).concat(await pb.json());
+    let html = await res.text();
+    for (const [from, to] of REPLACEMENTS) {
+      if (!html.includes(from)) throw new Error("Patch target missing");
+      html = html.replace(from, to);
+    }
+    document.open();
+    document.write(html);
+    document.close();
+  } catch (err) {
+    document.getElementById("boot").textContent = "Failed to load game: " + err;
+  }
+})();
+</script>
+</body>
+</html>
