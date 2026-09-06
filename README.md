@@ -20,21 +20,23 @@ Survive as long as you can. Obstacles scroll toward you; jump, duck, dash, and m
 
 ### Mobile / touch
 
+**Landscape only on mobile.** Portrait shows a rotate overlay that blocks play — there is no “Play anyway” path. Disable rotation lock and turn the phone sideways.
+
 On touch devices, on-screen buttons appear during play:
 
 - **JUMP** / **DUCK** — right side
 - **FWD** / **BWD** — left side (move the chair)
 - **TRICK** — left side (lights up when a trick window is open)
 
-The game is **mobile-first**: on phones/tablets it fills the full viewport (`100dvh`, safe-area aware). Landscape is recommended; portrait is supported via **Play anyway**.
+The game stage keeps a **16:9** aspect ratio, fitted to the viewport, then scaled to **99%** and centered so browser chrome / edges do not clip the frame. Touch controls respect safe-area insets without shrinking the game frame via body padding.
 
-Desktop (fine pointer, ≥900px) keeps a centered 16:9 arcade frame.
+Desktop (fine pointer, ≥900px) uses the same centered 16:9 frame with the 1% inset.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Bootloader that applies mobile fullscreen patches to the pinned game build |
+| `index.html` | Bootloader that applies mobile landscape / viewport patches to the pinned game build |
 | `favicon.ico` | Site icon |
 | `CNAME` | Custom domain for GitHub Pages (`hochairz.cc`) |
 | `NEXT_STEPS.md` | Optional notes for leaderboard setup |
