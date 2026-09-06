@@ -42,7 +42,8 @@ Desktop (fine pointer, ≥900px) uses the same centered 16:9 frame with the 1% i
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Bootloader that applies mobile landscape / viewport / fullscreen / PWA patches to the pinned game build |
+| `index.html` | Bootloader that fetches the pinned game build and applies patches from `patches-0.json`…`patches-3.json` |
+| `patches-0.json` … `patches-3.json` | Bootloader REPLACEMENTS (portrait hard-lock, fullscreen settle, PWA/FS, layout) |
 | `manifest.webmanifest` | Web app manifest (`standalone`, theme `#0a0a0a`) |
 | `icon.svg` / `icon-maskable.svg` | PWA / home-screen icons |
 | `favicon.ico` | Site icon |
@@ -62,7 +63,7 @@ Scores use Firebase Firestore when configured. Offline / failed submits fall bac
 
 ## Local preview
 
-Serve the folder (required so the bootloader can fetch the game source):
+Serve the folder (required so the bootloader can fetch the game source + patch JSON):
 
 ```bash
 npx --yes serve .
