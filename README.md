@@ -32,11 +32,18 @@ The game stage keeps a **16:9** aspect ratio, fitted to the viewport, then scale
 
 Desktop (fine pointer, ≥900px) uses the same centered 16:9 frame with the 1% inset.
 
+### Fullscreen + Add to Home Screen
+
+- **Fullscreen API** — Tapping **PLAY** (or the in-game **FULLSCREEN** control, when available) requests fullscreen on the game container / document after that user gesture (standard + `webkit` prefixes). Exit via the control or the browser’s exit gesture. If fullscreen is unsupported or denied (common on **iOS Safari**), play still starts — fullscreen never blocks the game.
+- **PWA / Add to Home Screen** — `manifest.webmanifest` uses `display: "standalone"`, theme/background `#0a0a0a`, name **Horizontal Office Chair** / short name **HOC**. Apple web-app meta tags are set for home-screen launch. When the Fullscreen API is unavailable (typical iPhone in-browser), a short dismissible hint explains **Share → Add to Home Screen** for chrome-free play; it stays below the portrait rotate overlay and does not appear in portrait.
+
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `index.html` | Bootloader that applies mobile landscape / viewport patches to the pinned game build |
+| `index.html` | Bootloader that applies mobile landscape / viewport / fullscreen / PWA patches to the pinned game build |
+| `manifest.webmanifest` | Web app manifest (`standalone`, theme `#0a0a0a`) |
+| `icon.svg` / `icon-maskable.svg` | PWA / home-screen icons |
 | `favicon.ico` | Site icon |
 | `CNAME` | Custom domain for GitHub Pages (`hochairz.cc`) |
 | `NEXT_STEPS.md` | Optional notes for leaderboard setup |
