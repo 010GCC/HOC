@@ -20,7 +20,7 @@ Survive as long as you can. Obstacles scroll toward you; jump, duck, dash, and m
 
 ### Mobile / touch
 
-**Landscape only on mobile.** Portrait shows a rotate overlay that blocks play — there is no “Play anyway” path. Disable rotation lock and turn the phone sideways.
+**Landscape only on mobile — hard lock.** Portrait on touch devices shows a rotate overlay that blocks play. There is no “Play anyway” path. **PLAY** / **PLAY AGAIN** / `startGame` refuse to start while portrait; the overlay is never dismissed in portrait. If you rotate to portrait mid-run, the overlay returns, input freezes, and the game loop pauses until you return to landscape. Disable rotation lock and turn the phone sideways.
 
 On touch devices, on-screen buttons appear during play:
 
@@ -35,6 +35,7 @@ Desktop (fine pointer, ≥900px) uses the same centered 16:9 frame with the 1% i
 ### Fullscreen + Add to Home Screen
 
 - **Fullscreen API** — Tapping **PLAY** (or the in-game **FULLSCREEN** control, when available) requests fullscreen on the game container / document after that user gesture (standard + `webkit` prefixes). Exit via the control or the browser’s exit gesture. If fullscreen is unsupported or denied (common on **iOS Safari**), play still starts — fullscreen never blocks the game.
+- **Fullscreen settle** — Entering/exiting fullscreen (and shortly after PLAY requests FS) runs multiple layout passes (`requestAnimationFrame` ×2 plus delayed timeouts ~50–350ms) that re-measure the stage (preferring the fullscreen element / `visualViewport` when needed) and re-init background layers in-game. CSS sizes `:fullscreen` / `#gameContainer:fullscreen` from the FS box (`100%` → 99% 16:9 centered) so letterboxing does not stay uneven until a manual resize/screenshot.
 - **PWA / Add to Home Screen** — `manifest.webmanifest` uses `display: "standalone"`, theme/background `#0a0a0a`, name **Horizontal Office Chair** / short name **HOC**. Apple web-app meta tags are set for home-screen launch. When the Fullscreen API is unavailable (typical iPhone in-browser), a short dismissible hint explains **Share → Add to Home Screen** for chrome-free play; it stays below the portrait rotate overlay and does not appear in portrait.
 
 ## Files
